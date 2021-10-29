@@ -1,0 +1,34 @@
+{
+  "name": "groupomania",
+  "version": "1.0.0",
+  "description": "Social network for groupomania like 9GAG!",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PierreCharnace/PierreCharnace_P7_26102021.git"
+  },
+  "keywords": [
+    "network",
+    "http",
+    "api",
+    "rest"
+  ],
+  "author": "Pierre Charnacé",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PierreCharnace/PierreCharnace_P7_26102021/issues"
+  },
+  "homepage": "https://github.com/PierreCharnace/PierreCharnace_P7_26102021#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "fs": "^0.0.1-security",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.2",
+    "nodemon": "^2.0.14",
+    "sequelize": "^5.22.4"
+  }
+}
