@@ -9,34 +9,34 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      user_lastName: {
+      lastName: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      user_firstName: {
+      firstName: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      user_email: {
+      email: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      user_birthday: {
+      birthday: {
         allowNull: true,
         type: Sequelize.INTEGER
       },
-      user_password: {
+      password: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      user_ProfilePictures: {
+      ProfilePictures: {
         type: Sequelize.STRING
       },
-      user_isAdmin: {
+      isAdmin: {
         allowNull: false,
         type: sequelize.BOOLEAN
       },
-      user_isEnable: {
+      isEnable: {
         type: Sequelize.BOOLEAN
       },
       createdAt: {

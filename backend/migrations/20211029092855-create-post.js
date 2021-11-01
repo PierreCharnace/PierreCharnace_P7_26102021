@@ -17,10 +17,10 @@ module.exports = {
         key: 'id'
         }
       },
-      post_title: {
+      title: {
         type: Sequelize.STRING
       },
-      post_content: {
+      content: {
         type: Sequelize.STRING
       },
       post_date: {

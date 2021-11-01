@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      models.Message.belongsTo(models.User, {
+      models.Post.belongsTo(models.User, {
         foreignKey: {
           allowNull: false
         }
@@ -19,9 +19,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Post.init({
-    post_title: DataTypes.STRING,
-    post_content: DataTypes.STRING,
-    post_date: DataTypes.INTEGER
+    title: DataTypes.STRING,
+    content: DataTypes.STRING,
+    date: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Post',
