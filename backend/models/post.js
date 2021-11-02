@@ -1,6 +1,6 @@
 'use strict';
 const {
-  Model
+  Model, INTEGER
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Post extends Model {
@@ -14,14 +14,14 @@ module.exports = (sequelize, DataTypes) => {
       models.Post.belongsTo(models.User, {
         foreignKey: {
           allowNull: false
-        }
+        } 
       })
     }
   };
   Post.init({
     title: DataTypes.STRING,
     content: DataTypes.STRING,
-    date: DataTypes.INTEGER
+    likes: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Post',

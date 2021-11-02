@@ -8,7 +8,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-
       idUSERS: { 
         allowNull: false,
         type: Sequelize.INTEGER,
@@ -23,7 +22,10 @@ module.exports = {
       content: {
         type: Sequelize.STRING
       },
-      post_date: {
+      likes: {
+        type: Sequelize.STRING
+      },
+      date: {
         type: Sequelize.INTEGER
       },
       createdAt: {

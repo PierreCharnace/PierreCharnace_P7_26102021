@@ -29,7 +29,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      ProfilePictures: {
+      profilePictures: {
         type: Sequelize.STRING
       },
       isAdmin: {
