@@ -38,17 +38,30 @@ module.exports = {
             },
             function(userFound, done) {
                 if(userFound) {
-
+                    models.Post.create({
+                        title   : title,
+                        content : content,
+                        likes   : 0,
+                        UserId  : userFound.id
+                    })
+                    .then(function(newPost) {
+                        done(newPost);
+                    });
                 } else {
                     res.status(404).json({ 'error': 'user not found' });
                 }
             },
         ], 
         function(newPost) {
-
-        })
+            if (newPost) {
+                return res.status(201).json({ 'error': 'cannot post message' });
+            }
+        });
     },
-    ListMessage: function(req, res) {
-
+    listPosts: function(req, res) {
+        const fields = req.query.fields;
+        const limit = parseInt(req.query.limit);
+        const offset = parseInt(rq.query.offset);
+        const order = req.query.order;
     }
 }
