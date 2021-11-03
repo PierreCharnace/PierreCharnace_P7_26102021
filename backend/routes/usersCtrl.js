@@ -3,10 +3,13 @@ const bcrypt = require('bcryptjs');
 const jwtUtils = require('../utils/jwt.utils');
 const models = require('../models');
 const cryptojs = require('crypto-js');
+const asyncLib = require('async');
+const { rmSync } = require('fs');
 
-//COnstants
-const EMAIL_REGEX = /erzezrer/;
-const PASSWORD_REGEX = /zer/;
+//Constants
+const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+;
+const PASSWORD_REGEX = /^(?=.*\d).{4,8}$/;
 
 //Routes
 
@@ -21,20 +24,32 @@ module.exports = {
         const profilePictures = req.body.profilePictures;
 
         if (email == null || lastName == null || firstName == null || password == null) {
-            return res.status(400).json({ 'error': 'missing parameters' });
+            return res.status(400).json({ 'error': 'paramètres manquants' });
         }
-
-        if (lastName.length >= 20 || lastName.length <= 1) {
-            return res.status(400).json({ 'error': 'wrong lastname (must be length 2 - 20'});
+        if (lastName.length >= 30 || lastName.length <= 1) {
+            return res.status(400).json({ 'error': 'Nom non comformes ildoit être compris entre 2 et 30 caractères'});
         }
-        if (firstName.length >= 30 || firstName.length <= 1) {
-            return res.status(400).json({ 'error': 'wrong lastname (must be length 2 - 20'});
+        if (firstName.length >= 20 || firstName.length <= 1) {
+            return res.status(400).json({ 'error': 'Prénom non comformes il doit être compris entre 2 et 20 caractères'});
         }
         if (!EMAIL_REGEX.test(email)) {
-
+            return res.status(400).json({ 'error': 'email non valide' })
+        }
+        if (!PASSWORD_REGEX.test(password)) {
+            return res.status(400).json({ 'error': 'mot de passe non valide il doit être compris entre 4 et 8 caractères et contenir au moins 1 nombre'})
         }
 
-        //todo verify pseudo length, email regex, password
+        asyncLib.waterfall([
+            function (done) {
+                done(null);
+            }
+        ], function(err) {
+            if(!err) {
+                return res.status(200).json({ 'msg': 'ok'});
+            }   else {
+                return rmSync.status(404).json({ 'error': 'erreur'});
+            }
+        })
 
         models.User.findOne({
             attributes: ['email'],
