@@ -54,23 +54,33 @@ module.exports = {
         ], 
         function(newPost) {
             if (newPost) {
-                return res.status(201).json({ 'error': 'cannot post message' });
+                return res.status(201).json({ newPost});
+            } else {
+                return res.status(500).json({ 'error': 'cannot send posts'});
             }
         });
     },
     listPosts: function(req, res) {
         const fields = req.query.fields; // column when we need to display
         const limit = parseInt(req.query.limit);  //|get posts by segmentation ( 20 posts per leaf)
-        const offset = parseInt(rq.query.offset); //|
+        const offset = parseInt(req.query.offset); //|
         const order = req.query.order; // get posts by particular order
 
         models.Post.findAll({
             order: [(order != null) ? order.split(':') : ['title', 'ASC']],
-            attributes: (fields !== '*' && fileds != null) ? fields.split(',') : null,
+            attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
             limit: (!isNaN(limit)) ? limit : null,
-            offset: (!isNaN(offset)) ? offset : null
+            offset: (!isNaN(offset)) ? offset : null,
+            include: [{
+                model: models.User,
+                attributes: [ 'lastName', 'firstName']
+            }]
         }).then(function(posts) {
-
+            if (posts) {
+                res.status(200).json(posts);
+            } else {
+                res.status(404).json({ 'error': 'no posts found'});
+            }
         }).catch(function(err) {
             console.log(err);
             res.status(500).json({ 'error': 'invalid fields' });
