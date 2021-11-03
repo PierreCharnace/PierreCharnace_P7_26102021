@@ -59,9 +59,22 @@ module.exports = {
         });
     },
     listPosts: function(req, res) {
-        const fields = req.query.fields;
-        const limit = parseInt(req.query.limit);
-        const offset = parseInt(rq.query.offset);
-        const order = req.query.order;
+        const fields = req.query.fields; // column when we need to display
+        const limit = parseInt(req.query.limit);  //|get posts by segmentation ( 20 posts per leaf)
+        const offset = parseInt(rq.query.offset); //|
+        const order = req.query.order; // get posts by particular order
+
+        models.Post.findAll({
+            order: [(order != null) ? order.split(':') : ['title', 'ASC']],
+            attributes: (fields !== '*' && fileds != null) ? fields.split(',') : null,
+            limit: (!isNaN(limit)) ? limit : null,
+            offset: (!isNaN(offset)) ? offset : null
+        }).then(function(posts) {
+
+        }).catch(function(err) {
+            console.log(err);
+            res.status(500).json({ 'error': 'invalid fields' });
+        })
+
     }
 }
