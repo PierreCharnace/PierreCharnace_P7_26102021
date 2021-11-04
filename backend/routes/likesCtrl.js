@@ -4,8 +4,6 @@ const jwtUtils = require('../utils/jwt.utils');
 const asyncLib = require('async');
 
 //Constants
-const DISLIKED = 0;
-const LIKED    = 1;
 
 //Routes
 module.exports = {
@@ -50,45 +48,35 @@ module.exports = {
             },
             function(postFound, userFound, done) {
                 if(userFound) {
-                  models.Like.findOne({
-                    where: {
-                      userId: userId,
-                      postId: postId
-                    }
-                  })
-                  .then(function(userAlreadyLikedFound) {
-                    done(null, postFound, userFound, userAlreadyLikedFound);
-                  })
-                  .catch(function(err) {
-                    return res.status(500).json({ 'error': 'unable to verify is user already liked' });
-                  });
-                } else {
-                  res.status(404).json({ 'error': 'user not exist' });
-                }
-              },
-            function(postFound, userFound, userAlreadyLikedFound, done) {
-                if(!userAlreadyLikedFound) {
-                  postFound.addUser(userFound, { isLike: LIKED })
-                  .then(function (alreadyLikeFound) {
-                    done(null, postFound, userFound);
-                  })
-                  .catch(function(err) {
-                    return res.status(500).json({ 'error': 'unable to set user reaction' });
-                  });
-                } else {
-                  if (userAlreadyLikedFound.isLike === DISLIKED) { //verify if is disliked or like
-                    userAlreadyLikedFound.update({
-                      isLike: LIKED,
-                    }).then(function() {
-                      done(null, postFound, userFound);
-                    }).catch(function(err) {
-                      res.status(500).json({ 'error': 'cannot update user reaction' });
+                    models.Like.findOne({
+                        where: {
+                        userId: userId,
+                        postId: postId
+                        }
+                    })
+                    .then(function(isUserAlreadyLikedFound) {
+                        done(null, postFound, userFound, isUserAlreadyLikedFound);
+                    })
+                    .catch(function(err) {
+                        return res.status(500).json({ 'error': 'unable to verify is user already liked'});
                     });
-                  } else {
-                    res.status(409).json({ 'error': 'message already liked' });
-                  }
+                } else {
+                    res.status(404).json({ 'error': 'user not exist' });
                 }
-              },
+            },
+            function(postFound, userFound, isUserAlreadyLiked, done) {
+                if(!isUserAlreadyLiked) {
+                    postFound.addUser(userFound)
+                    .then(function(alreadyLikeFound) {
+                        done(null, postFound, userFound);
+                    })
+                    .catch(function(err) {
+                        return res.status(500).json({ 'error': 'unable to set user reaction' });
+                    });
+                }   else {
+                    res.status(409).json({ 'error': 'message already liked'});
+                }
+            },
             function(postFound, userFound, done) {
                 postFound.update({
                     likes: postFound.likes + 1,
@@ -117,7 +105,8 @@ module.exports = {
      
         if (postId <= 0) {
           return res.status(400).json({ 'error': 'invalid parameters' });
-        }   
+        }
+     
         asyncLib.waterfall([
          function(done) {
             models.Post.findOne({
@@ -153,8 +142,8 @@ module.exports = {
                   postId: postId
                 }
               })
-              .then(function(userAlreadyLikedFound) {
-                 done(null, postFound, userFound, userAlreadyLikedFound);
+              .then(function(isUserAlreadyLikedFound) {
+                 done(null, postFound, userFound, isUserAlreadyLikedFound);
               })
               .catch(function(err) {
                 return res.status(500).json({ 'error': 'unable to verify is user already liked' });
@@ -163,27 +152,17 @@ module.exports = {
               res.status(404).json({ 'error': 'user not exist' });
             }
           },
-          function(postFound, userFound, userAlreadyLikedFound, done) {
-           if(!userAlreadyLikedFound) {
-               postFound.addUser(userFound, { isLike: DISLIKED })
-             .then(function (alreadyLikeFound) {
+          function(postFound, userFound, isUserAlreadyLiked, done) {
+           if(isUserAlreadyLiked) {
+               isUserAlreadyLiked.destroy()
+             .then(function () {
                done(null, postFound, userFound);
              })
              .catch(function(err) {
                return res.status(500).json({ 'error': 'unable to set user reaction' });
              });
            } else {
-               if (userAlreadyLikedFound.isLike === LIKED) {
-                   userAlreadyLikedFound.update({
-                       isLike: DISLIKED,
-                   }).then(function() {
-                    done(null, postFound, userFound);
-                   }).catch(function(err) {
-                       res.status(500).json({ 'error': 'cannot update user reaction' });
-                   });
-               }    else {
-                   res.status(409).json({ 'error': 'post already disliked' });
-               }
+            done(null, postFound, userFound);
            }
           },
           function(postFound, userFound, done) {
@@ -203,4 +182,5 @@ module.exports = {
           }
         });
        }
+       
     }
