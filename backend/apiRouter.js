@@ -2,7 +2,7 @@
 const express = require('express');
 const usersCtrl = require('./routes/usersCtrl');
 const postsCtrl = require('./routes/postsCtrl');
-
+const likesCtrl = require('./routes/likesCtrl')
 
 //Router
 exports.router = (function() {
@@ -17,6 +17,10 @@ exports.router = (function() {
     //Posts routes
     apiRouter.route('/posts/new').post(postsCtrl.CreatePost);
     apiRouter.route('/posts/').get(postsCtrl.listPosts);
+    
+    //Likes routes
+    apiRouter.route('/post/:postId/vote/like').post(likesCtrl.likePost);
+    apiRouter.route('/post/:postId/vote/dislike').post(likesCtrl.dislikePost);
 
     return apiRouter;
 })();
