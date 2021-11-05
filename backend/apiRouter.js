@@ -19,7 +19,6 @@ exports.router = (function() {
     apiRouter.route('/posts/').get(postsCtrl.listPosts);
                        //    ||    
     //Likes routes       for \/ specify name parameter
-    
     apiRouter.route('/posts/:postId/like').post(likesCtrl.likePost);
     apiRouter.route('/posts/:postId/dislike').post(likesCtrl.dislikePost);
     return apiRouter;
