@@ -28,6 +28,15 @@ module.exports = {
       likes: {
         type: Sequelize.STRING
       },
+      disLikes: {
+        type: Sequelize.STRING
+      },
+      usersLiked: {
+        type: Sequelize.STRING
+      },
+      usersDisliked: {
+      type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
