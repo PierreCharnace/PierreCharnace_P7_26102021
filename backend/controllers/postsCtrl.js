@@ -1,7 +1,7 @@
 //Imports
 const models = require('../models');
 const asyncLibe = require('async');
-const jwtUtils = require('../utils/jwt.utils')
+const jwtUtils = require('../middleware/jwt.utils')
 // Constants
 const TITLE_LIMIT = 2;
 const CONTENT_LIMIT = 4;
@@ -26,10 +26,9 @@ module.exports = {
         }
         asyncLibe.waterfall([
             function(done) {
-                models.User.findOne({
-                    where: { id: userId }
-                })
+                models.User.findOne({ id: userId })
                 .then(function(userFound) {
+                    console.log("---->",userFound);
                     done(null, userFound);
                 })
                 .catch(function(err) {
@@ -48,7 +47,8 @@ module.exports = {
                         done(newPost);
                     });
                 } else {
-                    res.status(404).json({ 'error': 'user not found' });
+                    console.log("/*/*/*/",userFound);
+                    res.status(404).json({ 'error': `user not found${console.log(userFound)}` });
                 }
             },
         ], 

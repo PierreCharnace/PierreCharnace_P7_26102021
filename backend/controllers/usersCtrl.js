@@ -1,27 +1,29 @@
 //imports
 const bcrypt = require('bcryptjs');
-const jwtUtils = require('../utils/jwt.utils');
+const jwtUtils = require('../middleware/jwt.utils');
 const models = require('../models');
 const cryptojs = require('crypto-js');
 const asyncLib = require('async');
-const { rmSync } = require('fs');
-
+require('dotenv').config({path: './config/.env'});
 //Constants
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 ;
 const PASSWORD_REGEX = /^(?=.*\d).{4,8}$/;
 
-//Routes
+//encrypt email
+
 
 module.exports = {
     register: function(req, res) {
         //params
         const email = req.body.email;
+        const encryptEmail = cryptojs.HmacSHA256(req.body.email, process.env.ENCRYPTEDKEYEMAIL).toString();
         const lastName = req.body.lastName;
         const firstName = req.body.firstName;
         const birthday = req.body.birthday;
         const password = req.body.password;
         const profilePictures = req.body.profilePictures;
+        
 
         if (email == null || lastName == null || firstName == null || password == null) {
             return res.status(400).json({ 'error': 'paramètres manquants' });
@@ -43,7 +45,7 @@ module.exports = {
             function (done) {
                 models.User.findOne({
                     attributes: ['email'],
-                    where: { email: email }
+                    where: { email: encryptEmail }
                 })
                 .then(function(userFound) {
                     done(null, userFound);
@@ -63,11 +65,11 @@ module.exports = {
             },
         function(userFound, bcryptedPassword, done) {
                 const newUser = models.User.create({
-                    email : email,
-                    lastName : lastName,
+                    email     : encryptEmail,
+                    lastName  : lastName,
                     firstName : firstName,                       
-                    birthday : birthday,
-                    password : bcryptedPassword,
+                    birthday  : birthday,
+                    password  : bcryptedPassword,
                     profilePictures : profilePictures,
                     isEnable : 0,
                     isAdmin : 0
@@ -94,6 +96,7 @@ module.exports = {
             //params   
         const email = req.body.email;
         const password = req.body.password;
+        const encryptedEmail = cryptojs.HmacSHA256(req.body.email, process.env.ENCRYPTEDKEYEMAIL).toString();
 
         if (email == null || password == null) {
             return res.status(400).json({ 'error': 'paramètres manquants' });
@@ -101,10 +104,9 @@ module.exports = {
 
         asyncLib.waterfall([
       function(done) {
-        models.User.findOne({
-          where: { email: email }
-        })
+        models.User.findOne({ email: encryptedEmail })
         .then(function(userFound) {
+          console.log('---->*',userFound);
           done(null, userFound);
         })
         .catch(function(err) {
@@ -142,7 +144,7 @@ module.exports = {
     // Getting auth header
     const headerAuth = req.headers['authorization'];
     const userId = jwtUtils.getUserId(headerAuth);
-
+    console.log(userId);
     if (userId < 0)
       return res.status(400).json({ 'error': 'wrong token' });
 
