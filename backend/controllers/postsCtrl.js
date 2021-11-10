@@ -7,7 +7,7 @@ const TITLE_LIMIT = 2;
 const CONTENT_LIMIT = 4;
 //Routes
 module.exports = {
-    CreatePost: function(req, res) {
+    createPost: function(req, res) {
          // Getting auth header
         const headerAuth = req.headers['authorization'];
         const userId = jwtUtils.getUserId(headerAuth);
@@ -60,7 +60,7 @@ module.exports = {
             }
         });
     },
-    listPosts: function(req, res) {
+    listPosts: function(req, res, next) {
         const fields = req.query.fields; // column when we need to display
         const limit = parseInt(req.query.limit);  //|get posts by segmentation ( 20 posts per leaf)
         const offset = parseInt(req.query.offset); //|
@@ -86,8 +86,8 @@ module.exports = {
             res.status(500).json({ 'error': 'invalid fields' });
         })
 
-    },/*
-    deletePost: (req, res) => {
+    },
+    deleteOnePost: (req, res) => {
         console.log('//////////////////',req.params.id);
         models.Post.findOne({ where: { id: req.params.id} })
         .then(post=> {
@@ -101,5 +101,46 @@ module.exports = {
         })
         .catch(error => res.status(500).json({ message: 'Erreur serveur' }))
         
-    }*/
+    },
+
+    updatePost: (req, res) => {
+        const title = req.body.title;
+        const content = req.body.content;
+        const attachment = req.body.attachment;
+         console.log('//////////////////',req.params.id);
+         asyncLib.waterfall([
+            function(done) {
+              models.User.findOne({
+                attributes: [ 'id', 'birthday', 'profilePictures' ],
+              }).then(function (userFound) {//return user
+                done(null, userFound); // next function with done
+              })
+              .catch(function(err) {
+                return res.status(500).json({ 'error': 'unable to verify user' });
+              });
+            },
+            function(userFound, done) {
+              if(userFound) {
+                userFound.update({
+                  lastName: (lastName ? lastName : userFound.lastName),
+                  firstName: (firstName ? firstName : userFound.firstName),
+                  birthday: (birthday ? birthday : userFound.birthday),                           // verify if birthday and profilePictures is valid in req, if ok, 
+                  profilePictures: (profilePictures ? profilePictures : userFound.profilePictures) // substitute or if same thing I let them
+                }).then(function() {
+                  done(userFound); // when is update, return userFound, the waterfall is done
+                }).catch(function(err) {
+                  res.status(500).json({ 'error': 'cannot update user' });
+              });
+          } else {
+            res.status(404).json({ 'error': 'user not found' });
+          }
+        },
+      ], function(userFound) {// if userFound is valid I return status 200
+        if (userFound) {
+          return res.status(201).json(userFound);
+        } else {
+          return res.status(500).json({ 'error': 'cannot update user profile' });
+        }
+      });
+    }
 }

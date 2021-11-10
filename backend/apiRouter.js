@@ -2,7 +2,7 @@
 const express = require('express');
 const usersCtrl = require('./controllers/usersCtrl');
 const postsCtrl = require('./controllers/postsCtrl');
-const likesCtrl = require('./controllers/likesCtrl');
+//const likesCtrl = require('./controllers/likesCtrl');
 //const multer = require('../middleware/multer-config');
 const auth = require('./middleware/auth');
 
@@ -15,19 +15,23 @@ exports.router = (function() {
 
     apiRouter.post('/users/register/', /*multer,*/ usersCtrl.register);/////
     apiRouter.post('/users/login/', usersCtrl.login);
+   // apiRouter.get("/logout", userCtrl.logout);
+   // apiRouter.get("/desactivateAccount/:id", userCtrl.desactivateAccount);
     apiRouter.get('/users/userProfile/', auth, usersCtrl.getUserProfile);
     apiRouter.put('/users/userProfile/', auth, usersCtrl.updateUserProfile);
     
-    //apiRouter.delete('/delete/:id', auth, postsCtrl.deletePost);////// ALL ROUTES AND WHAT THEY DOING
-    //router.get('/', auth, saucesCtrl.getAllSauces);////
-    //apiRouter.route('/user/userProfile').delete(usersCtrl.deleteUserProfile);
-    //Posts routes
-    apiRouter.post('/posts/new', auth, postsCtrl.CreatePost);
-    apiRouter.get('/posts/', auth, postsCtrl.listPosts);
+    //Post routes
+    apiRouter.post ('/posts/new', auth, postsCtrl.createPost);
+    apiRouter.get  ('/posts/', auth, postsCtrl.listPosts);
+    apiRouter.put  ('/update/:id', auth, postsCtrl.updatePost);
+    apiRouter.delete('/delete/:id', auth, postsCtrl.deleteOnePost);
+ 
+    
+    
                        //    ||    
     //Likes routes       for \/ specify name parameter
-    apiRouter.route('/posts/:postId/like').post(likesCtrl.likePost);
-    apiRouter.route('/posts/:postId/dislike').post(likesCtrl.dislikePost);
+   // apiRouter.route('/posts/:postId/like').post(likesCtrl.likePost);
+   // apiRouter.route('/posts/:postId/dislike').post(likesCtrl.dislikePost);
     //apiRouter.route('/posts/:id/like').post(likeOrDislikePost.likeOrDislikePost);
     return apiRouter;
 })();
