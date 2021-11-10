@@ -4,14 +4,11 @@ const jwtUtils = require('../middleware/jwt.utils');
 const models = require('../models');
 const cryptojs = require('crypto-js');
 const asyncLib = require('async');
+const jwt = require('jsonwebtoken');
 require('dotenv').config({path: './config/.env'});
 //Constants
-const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-;
+const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const PASSWORD_REGEX = /^(?=.*\d).{4,8}$/;
-
-//encrypt email
-
 
 module.exports = {
     register: function(req, res) {
@@ -23,13 +20,12 @@ module.exports = {
         const birthday = req.body.birthday;
         const password = req.body.password;
         const profilePictures = req.body.profilePictures;
-        
 
         if (email == null || lastName == null || firstName == null || password == null) {
             return res.status(400).json({ 'error': 'paramètres manquants' });
         }
         if (lastName.length >= 30 || lastName.length <= 1) {
-            return res.status(400).json({ 'error': 'Nom non comformes ildoit être compris entre 2 et 30 caractères'});
+            return res.status(400).json({ 'error': 'Nom non comformes il doit être compris entre 2 et 30 caractères'});
         }
         if (firstName.length >= 20 || firstName.length <= 1) {
             return res.status(400).json({ 'error': 'Prénom non comformes il doit être compris entre 2 et 20 caractères'});
@@ -96,7 +92,7 @@ module.exports = {
             //params   
         const email = req.body.email;
         const password = req.body.password;
-        const encryptedEmail = cryptojs.HmacSHA256(req.body.email, process.env.ENCRYPTEDKEYEMAIL).toString();
+        const encryptEmail = cryptojs.HmacSHA256(req.body.email, process.env.ENCRYPTEDKEYEMAIL).toString();
 
         if (email == null || password == null) {
             return res.status(400).json({ 'error': 'paramètres manquants' });
@@ -104,9 +100,9 @@ module.exports = {
 
         asyncLib.waterfall([
       function(done) {
-        models.User.findOne({ email: encryptedEmail })
+        models.User.findOne({ 
+          where: { email: encryptEmail }})
         .then(function(userFound) {
-          console.log('---->*',userFound);
           done(null, userFound);
         })
         .catch(function(err) {
@@ -141,17 +137,11 @@ module.exports = {
     });
   },
   getUserProfile: function(req, res) {
-    // Getting auth header
-    const headerAuth = req.headers['authorization'];
-    const userId = jwtUtils.getUserId(headerAuth);
-    console.log(userId);
-    if (userId < 0)
-      return res.status(400).json({ 'error': 'wrong token' });
-
     models.User.findOne({
       attributes: [ 'id', 'lastName', 'firstName', 'email', 'birthday', 'profilePictures' ],
-      where: { id: userId }
-    }).then(function(user) {
+    })
+    .then(function(user) {
+      console.log('*/*/*/',user);
       if (user) {
         res.status(201).json(user);
       } else {
@@ -162,11 +152,9 @@ module.exports = {
     });
   },
   updateUserProfile: function(req, res) {
-    // Getting auth header
-    const headerAuth = req.headers['authorization'];
-    const userId = jwtUtils.getUserId(headerAuth);
-
     // Params
+    const lastName = req.body.lastName;
+    const firstName = req.body.firstName;
     const birthday = req.body.birthday;
     const profilePictures = req.body.profilePictures;
 
@@ -174,7 +162,6 @@ module.exports = {
       function(done) {
         models.User.findOne({
           attributes: [ 'id', 'birthday', 'profilePictures' ],
-          where: { id: userId }
         }).then(function (userFound) {//return user
           done(null, userFound); // next function with done
         })
@@ -185,8 +172,10 @@ module.exports = {
       function(userFound, done) {
         if(userFound) {
           userFound.update({
+            lastName: (lastName ? lastName : userFound.lastName),
+            firstName: (firstName ? firstName : userFound.firstName),
             birthday: (birthday ? birthday : userFound.birthday),                           // verify if birthday and profilePictures is valid in req, if ok, 
-            porfilePictures: (profilePictures ? profilePictures : userFound.profilePictures) // substitute or if same thing I let them
+            profilePictures: (profilePictures ? profilePictures : userFound.profilePictures) // substitute or if same thing I let them
           }).then(function() {
             done(userFound); // when is update, return userFound, the waterfall is done
           }).catch(function(err) {

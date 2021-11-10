@@ -1,7 +1,7 @@
 //imports
 const jwt = require('jsonwebtoken');
+require('dotenv').config({path: './config/.env'});
 
-const JWT_SIGN_SECRET = 'THE SECRET KEY FOR GROUPOMANIA'
 
 //exported functions
 module.exports = {
@@ -9,11 +9,7 @@ module.exports = {
         return jwt.sign({
             userId: userData.id,
             isAdmin: userData.isAdmin
-        },
-        JWT_SIGN_SECRET,
-        {
-            expiresIn: '24h'
-        })
+        },process.env.JWTSIGNSECRET,{expiresIn: '24h'})
     },
     parseAuthorization: function(authorization) {
         return (authorization != null) ? authorization.replace('Bearer ', '') : null;
@@ -23,7 +19,7 @@ module.exports = {
         const token = module.exports.parseAuthorization(authorization);
         if(token != null) {
             try {
-                const jwtToken = jwt.verify(token, JWT_SIGN_SECRET);
+                const jwtToken = jwt.verify(token, process.env.JWTSIGNSECRET);
                 if(jwtToken != null)
                 userId = jwtToken.userId;
             } catch(err) { }

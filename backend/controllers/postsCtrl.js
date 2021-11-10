@@ -48,7 +48,7 @@ module.exports = {
                     });
                 } else {
                     console.log("/*/*/*/",userFound);
-                    res.status(404).json({ 'error': `user not found${console.log(userFound)}` });
+                    res.status(404).json({ 'error': 'user not found' });
                 }
             },
         ], 
@@ -86,5 +86,20 @@ module.exports = {
             res.status(500).json({ 'error': 'invalid fields' });
         })
 
-    }
+    },/*
+    deletePost: (req, res) => {
+        console.log('//////////////////',req.params.id);
+        models.Post.findOne({ where: { id: req.params.id} })
+        .then(post=> {
+            const filename = post.attachment.split('/images/')[1];//extract name to delete
+            fs.unlink(`images/${filename}`, () => { // delete with fs.unlink
+                models.Post.deleteOne({
+                    where: {id : req.params.id} })
+            .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
+            .catch(error => res.status(404).json({ error }));
+            })
+        })
+        .catch(error => res.status(500).json({ message: 'Erreur serveur' }))
+        
+    }*/
 }
