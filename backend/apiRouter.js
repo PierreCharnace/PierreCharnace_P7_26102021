@@ -4,7 +4,7 @@ const usersCtrl = require('./controllers/usersCtrl');
 const postsCtrl = require('./controllers/postsCtrl');
 //const likesCtrl = require('./controllers/likesCtrl');
 //const multer = require('../middleware/multer-config');
-const auth = require('./middleware/auth');
+
 
 
 //Router
@@ -17,14 +17,14 @@ exports.router = (function() {
     apiRouter.post('/users/login/', usersCtrl.login);
    // apiRouter.get("/logout", userCtrl.logout);
    // apiRouter.get("/desactivateAccount/:id", userCtrl.desactivateAccount);
-    apiRouter.get('/users/userProfile/', auth, usersCtrl.getUserProfile);
-    apiRouter.put('/users/userProfile/', auth, usersCtrl.updateUserProfile);
+    apiRouter.get('/users/userProfile/', usersCtrl.getUserProfile);
+    apiRouter.put('/users/userProfile/', usersCtrl.updateUserProfile);
     
     //Post routes
-    apiRouter.post ('/posts/new', auth, postsCtrl.createPost);
-    apiRouter.get  ('/posts/', auth, postsCtrl.listPosts);
-    apiRouter.put  ('/update/:id', auth, postsCtrl.updatePost);
-    apiRouter.delete('/delete/:id', auth, postsCtrl.deleteOnePost);
+    apiRouter.post ('/posts/new', postsCtrl.createPost);
+    apiRouter.get  ('/posts/', postsCtrl.listPosts);
+    apiRouter.put  ('/posts/update/:id', postsCtrl.updatePost);
+    apiRouter.delete('/posts/delete/:id', postsCtrl.deleteOnePost);
  
     
     

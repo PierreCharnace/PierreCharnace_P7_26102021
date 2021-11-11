@@ -137,11 +137,17 @@ module.exports = {
     });
   },
   getUserProfile: function(req, res) {
+    var headerAuth  = req.headers['authorization'];
+    var userId      = jwtUtils.getUserId(headerAuth);
+
+    if (userId < 0)
+      return res.status(400).json({ 'error': 'wrong token' });
+
     models.User.findOne({
       attributes: [ 'id', 'lastName', 'firstName', 'email', 'birthday', 'profilePictures' ],
+      where: { id: userId}
     })
     .then(function(user) {
-      console.log('*/*/*/',user);
       if (user) {
         res.status(201).json(user);
       } else {
@@ -153,6 +159,8 @@ module.exports = {
   },
   updateUserProfile: function(req, res) {
     // Params
+    const headerAuth  = req.headers['authorization'];
+    const userId      = jwtUtils.getUserId(headerAuth);
     const lastName = req.body.lastName;
     const firstName = req.body.firstName;
     const birthday = req.body.birthday;
@@ -161,7 +169,8 @@ module.exports = {
     asyncLib.waterfall([
       function(done) {
         models.User.findOne({
-          attributes: [ 'id', 'birthday', 'profilePictures' ],
+          attributes: [ 'id','lastName', 'firstName', 'birthday', 'profilePictures' ],
+          where: { id: userId}
         }).then(function (userFound) {//return user
           done(null, userFound); // next function with done
         })
@@ -177,10 +186,10 @@ module.exports = {
             birthday: (birthday ? birthday : userFound.birthday),                           // verify if birthday and profilePictures is valid in req, if ok, 
             profilePictures: (profilePictures ? profilePictures : userFound.profilePictures) // substitute or if same thing I let them
           }).then(function() {
-            done(userFound); // when is update, return userFound, the waterfall is done
+              done(userFound); // when is update, return userFound, the waterfall is done
           }).catch(function(err) {
-            res.status(500).json({ 'error': 'cannot update user' });
-        });
+              res.status(500).json({ 'error': 'cannot update user' });
+          });
     } else {
       res.status(404).json({ 'error': 'user not found' });
     }

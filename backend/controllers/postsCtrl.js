@@ -1,6 +1,6 @@
 //Imports
 const models = require('../models');
-const asyncLibe = require('async');
+const asyncLib = require('async');
 const jwtUtils = require('../middleware/jwt.utils')
 // Constants
 const TITLE_LIMIT = 2;
@@ -15,6 +15,7 @@ module.exports = {
         // Params
         const title = req.body.title;
         const content = req.body.content;
+        const attachment = req.body.attachment;
 
         if (title == null || content == null) {
             return res.status(400).json({ 'error': 'missing parameters' });
@@ -24,11 +25,11 @@ module.exports = {
             return res.status(400).json({ 'error': 'invalid parameters' });
             
         }
-        asyncLibe.waterfall([
+        asyncLib.waterfall([
             function(done) {
-                models.User.findOne({ id: userId })
+                models.User.findOne({ 
+                    where: { id: userId } })
                 .then(function(userFound) {
-                    console.log("---->",userFound);
                     done(null, userFound);
                 })
                 .catch(function(err) {
@@ -40,6 +41,7 @@ module.exports = {
                     models.Post.create({
                         title   : title,
                         content : content,
+                        attachment: attachment,
                         likes   : 0,
                         UserId  : userFound.id
                     })
@@ -47,7 +49,6 @@ module.exports = {
                         done(newPost);
                     });
                 } else {
-                    console.log("/*/*/*/",userFound);
                     res.status(404).json({ 'error': 'user not found' });
                 }
             },
@@ -88,51 +89,84 @@ module.exports = {
 
     },
     deleteOnePost: (req, res) => {
-        console.log('//////////////////',req.params.id);
-        models.Post.findOne({ where: { id: req.params.id} })
+        
+        const headerAuth  = req.headers['authorization'];
+        const userId      = jwtUtils.getUserId(headerAuth);
+        const postId = req.params.id;
+    //asyncLib.waterfall([
+    //    function(done) {
+       //     models.
+    //    }
+   // ])
+        console.log('--->',postId);
+        models.Post.findOne({ 
+     
+            where: { id: postId} })
         .then(post=> {
-            const filename = post.attachment.split('/images/')[1];//extract name to delete
-            fs.unlink(`images/${filename}`, () => { // delete with fs.unlink
+           // const filename = post.attachment.split('/images/')[1];//extract name to delete
+           // fs.unlink(`images/${filename}`, () => { // delete with fs.unlink
                 models.Post.deleteOne({
-                    where: {id : req.params.id} })
+                    where: {id : postId} })
             .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
             .catch(error => res.status(404).json({ error }));
-            })
+           // })
         })
         .catch(error => res.status(500).json({ message: 'Erreur serveur' }))
         
     },
 
     updatePost: (req, res) => {
-        const title = req.body.title;
-        const content = req.body.content;
-        const attachment = req.body.attachment;
-         console.log('//////////////////',req.params.id);
+        //params
+    const headerAuth  = req.headers['authorization'];
+    const userId      = jwtUtils.getUserId(headerAuth);
+
+
+    const title = req.body.title;
+    const content = req.body.content;
+    const attachment = req.body.attachment;
+    const postId = req.params.id;
+
          asyncLib.waterfall([
             function(done) {
-              models.User.findOne({
-                attributes: [ 'id', 'birthday', 'profilePictures' ],
-              }).then(function (userFound) {//return user
-                done(null, userFound); // next function with done
-              })
-              .catch(function(err) {
-                return res.status(500).json({ 'error': 'unable to verify user' });
-              });
+                models.User.findOne({ 
+                    where: { id: userId } })
+                .then(function(userFound) {
+                    done(null, userFound);
+                })
+                .catch(function(err) {
+                    return res.status(500).json({ 'error': 'unable to verify user' });
+                });
             },
-            function(userFound, done) {
-              if(userFound) {
-                userFound.update({
-                  lastName: (lastName ? lastName : userFound.lastName),
-                  firstName: (firstName ? firstName : userFound.firstName),
-                  birthday: (birthday ? birthday : userFound.birthday),                           // verify if birthday and profilePictures is valid in req, if ok, 
-                  profilePictures: (profilePictures ? profilePictures : userFound.profilePictures) // substitute or if same thing I let them
+            function(userFound,done) {
+                if (userFound) {
+                models.Post.findOne({
+                    where: {id: postId},
+                    attributes: [ 'title', 'content', 'attachment' ],
+                    })
+                    .then(function (postToUpdate) {
+                        done(null, postToUpdate); 
+                    })
+                    .catch(function(err) {
+                    return res.status(500).json({ 'error': 'unable to verify post' });
+                    });
+                } else {
+                    res.status(404).json({ 'error': 'user not found' });
+                    }
+            },////////////////////////JE ME SUIS ARRÊTÉ lÀ/////////////////
+            function(postToUpdate, userFound, done) {
+              if(postToUpdate) {console.log('*-*-*-->',postToUpdate);
+                postoUpdate.update({
+                  title: (title ? title : postToUpdate.title),
+                  content: (content ? content : postToUpdate.content),  
+                  birthday: (attachment ? attachment : postToUpdate.attachment),// verify if title, content, attachment is valid in req, if ok, 
+                 
                 }).then(function() {
-                  done(userFound); // when is update, return userFound, the waterfall is done
+                  done(postToUpdate); // when is update, return userFound, the waterfall is done
                 }).catch(function(err) {
-                  res.status(500).json({ 'error': 'cannot update user' });
+                  res.status(500).json({ 'error': 'cannot update post' });
               });
           } else {
-            res.status(404).json({ 'error': 'user not found' });
+            res.status(404).json({ 'error': 'post not found' });
           }
         },
       ], function(userFound) {// if userFound is valid I return status 200
