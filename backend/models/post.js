@@ -20,11 +20,8 @@ module.exports = (sequelize, DataTypes) => {
   Post.init({
     title: DataTypes.STRING,
     content: DataTypes.STRING,
-    attachment: DataTypes.INTEGER,
-    likes: DataTypes.INTEGER,
-    dislikes: DataTypes.INTEGER,
-    usersLiked: DataTypes.ARRAY(DataTypes.STRING),
-    usersDisliked: DataTypes.ARRAY(DataTypes.STRING)
+    attachment: DataTypes.STRING,
+    paranoid: true,
 
   }, {
     sequelize,

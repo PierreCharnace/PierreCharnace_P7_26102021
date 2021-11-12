@@ -93,11 +93,6 @@ module.exports = {
         const headerAuth  = req.headers['authorization'];
         const userId      = jwtUtils.getUserId(headerAuth);
         const postId = req.params.id;
-    //asyncLib.waterfall([
-    //    function(done) {
-       //     models.
-    //    }
-   // ])
         console.log('--->',postId);
         models.Post.findOne({ 
      

@@ -23,19 +23,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       attachment: {
-        type: Sequelize.INTEGER
-      },
-      likes: {
         type: Sequelize.STRING
-      },
-      disLikes: {
-        type: Sequelize.STRING
-      },
-      usersLiked: {
-        type: Sequelize.STRING
-      },
-      usersDisliked: {
-      type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -44,7 +32,11 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
-      }
+      },
+      paranoid: {
+        allowNull: true,
+        type: Sequelize.BOOLEAN
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {

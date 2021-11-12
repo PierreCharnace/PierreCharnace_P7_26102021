@@ -137,8 +137,8 @@ module.exports = {
     });
   },
   getUserProfile: function(req, res) {
-    var headerAuth  = req.headers['authorization'];
-    var userId      = jwtUtils.getUserId(headerAuth);
+    const headerAuth  = req.headers['authorization'];
+    const userId      = jwtUtils.getUserId(headerAuth);
 
     if (userId < 0)
       return res.status(400).json({ 'error': 'wrong token' });
@@ -190,16 +190,47 @@ module.exports = {
           }).catch(function(err) {
               res.status(500).json({ 'error': 'cannot update user' });
           });
-    } else {
-      res.status(404).json({ 'error': 'user not found' });
-    }
-  },
-], function(userFound) {// if userFound is valid I return status 200
-  if (userFound) {
-    return res.status(201).json(userFound);
-  } else {
-    return res.status(500).json({ 'error': 'cannot update user profile' });
-  }
-});
-}
+        } else {
+          res.status(404).json({ 'error': 'user not found' });
+        }
+        },
+      ], function(userFound) {// if userFound is valid I return status 200
+        if (userFound) {
+          return res.status(201).json(userFound);
+        } else {
+          return res.status(500).json({ 'error': 'cannot update user profile' });
+        }
+      });
+      },
+  deleteProfile: function(req, res) {
+    const headerAuth  = req.headers['authorization'];
+    const userId      = jwtUtils.getUserId(headerAuth);
+
+    asyncLib.waterfall([
+      function(done) {
+        models.User.findOne({ 
+            where: { id: userId } })
+        .then(function(userFound) {
+            done(null, userFound);
+        })
+        .catch(function(err) {
+            return res.status(500).json({ 'error': 'unable to verify user' });
+        });
+    },
+    async() => {
+       await models.User.destroy({
+          where: {
+            id: userId,
+            attributes: [ 'id','lastName', 'firstName', 'birthday', 'profilePictures' ],
+          }
+          .then(() => res.status(200).json({ message: ' ' }))
+          .catch(function(err) {
+            return res.status(500).json({ 'error': 'unable to delete user profile'});
+         })
+        });
+      }
+    ])
+   
+     
+    },
 }

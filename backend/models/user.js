@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       models.User.hasMany(models.Post);
       models.User.hasMany(models.Comment);
-      models.User.hasMany(models.Like);
     }
   };
   User.init({
@@ -24,7 +23,9 @@ module.exports = (sequelize, DataTypes) => {
     password: DataTypes.STRING,
     profilePictures: DataTypes.STRING,
     isEnable: DataTypes.BOOLEAN,
-    isAdmin: DataTypes.BOOLEAN
+    isAdmin: DataTypes.BOOLEAN,
+    paranoid: true,
+    //timestamp: true,
   }, {
     sequelize,
     modelName: 'User',

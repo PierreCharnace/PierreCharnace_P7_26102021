@@ -46,7 +46,11 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
-      }
+      },
+      paranoid: {
+        allowNull: true,
+        type: Sequelize.BOOLEAN
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
