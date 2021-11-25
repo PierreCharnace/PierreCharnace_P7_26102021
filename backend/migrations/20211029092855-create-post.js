@@ -8,6 +8,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      title: {
+        type: Sequelize.STRING
+      },
+      content: {
+        type: Sequelize.STRING
+      },
       userId: { 
         allowNull: false,
         type: Sequelize.INTEGER,
@@ -16,12 +22,7 @@ module.exports = {
         key: 'id'
         }
       },
-      title: {
-        type: Sequelize.STRING
-      },
-      content: {
-        type: Sequelize.STRING
-      },
+      
       attachment: {
         type: Sequelize.STRING
       },
@@ -33,10 +34,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       },
-      paranoid: {
+      deletedAt: {
         allowNull: true,
-        type: Sequelize.BOOLEAN
-      },
+        type: Sequelize.DATE
+    }
     });
   },
   down: async (queryInterface, Sequelize) => {

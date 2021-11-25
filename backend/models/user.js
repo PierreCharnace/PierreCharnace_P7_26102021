@@ -19,16 +19,13 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     lastName: DataTypes.STRING,
     firstName: DataTypes.STRING,
-    birthday: DataTypes.INTEGER,
     password: DataTypes.STRING,
     profilePictures: DataTypes.STRING,
-    isEnable: DataTypes.BOOLEAN,
     isAdmin: DataTypes.BOOLEAN,
-    paranoid: true,
-    //timestamp: true,
   }, {
     sequelize,
     modelName: 'User',
+    paranoid: true,
   });
   return User;
 };

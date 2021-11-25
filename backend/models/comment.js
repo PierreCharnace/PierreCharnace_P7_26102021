@@ -11,16 +11,36 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      models.Comment.belongsTo(models.User, {
+      models.User.belongsTo(models.User, {
+        through: models.Comment,
         foreignKey: {
           allowNull: false
         } 
-      })
+      });
+      models.Post.belongsToMany(models.User, {
+        through: models.Comment,
+        foreignKey: 'postId',
+        otherKey: 'userId',
+    });
+
+    // Links from Tables and the foreign key
+    models.Comment.belongsTo(models.User, {
+        foreignKey: {
+            allowNull: false
+        }
+    });
+    models.Comment.belongsTo(models.Post, {
+        foreignKey: {
+            allowNull: false
+        }
+    });
 
     }
   };
   Comment.init({
-    content: DataTypes.STRING
+    content: DataTypes.STRING,
+    userId: DataTypes.INTEGER,
+    postId: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'Comment',

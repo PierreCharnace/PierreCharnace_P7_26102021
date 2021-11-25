@@ -21,11 +21,12 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     content: DataTypes.STRING,
     attachment: DataTypes.STRING,
-    paranoid: true,
+    
 
   }, {
     sequelize,
     modelName: 'Post',
+    paranoid: true,
   });
   return Post;
 };

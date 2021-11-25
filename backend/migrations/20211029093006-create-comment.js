@@ -8,6 +8,14 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      postId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'Posts',
+            key: 'id'
+        }
+    },
       userId: { 
         allowNull: false,
         type: Sequelize.INTEGER,
@@ -27,10 +35,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       },
-      paranoid: {
+      deletedAt: {
         allowNull: true,
-        type: Sequelize.BOOLEAN
-      },
+        type: Sequelize.DATE
+    }
     });
   },
   down: async (queryInterface, Sequelize) => {

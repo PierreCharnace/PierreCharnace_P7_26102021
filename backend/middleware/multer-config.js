@@ -5,7 +5,8 @@ const fs = require('fs');
 const MIME_TYPES =  {
     'image/jpg': 'jpg',///////////
     'image/jpeg': 'jpg',///////// for trad in good format
-    'image/png': 'png'////////////
+    'image/png': 'png',////////////
+    'image/.gif': 'gif'
 };
 
 const storage = multer.diskStorage({

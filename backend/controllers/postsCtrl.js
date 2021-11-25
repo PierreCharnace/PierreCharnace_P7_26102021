@@ -112,44 +112,28 @@ module.exports = {
 
     updatePost: (req, res) => {
         //params
-    const headerAuth  = req.headers['authorization'];
-    const userId      = jwtUtils.getUserId(headerAuth);
-
-
+    const postId = req.params.id;
     const title = req.body.title;
     const content = req.body.content;
     const attachment = req.body.attachment;
-    const postId = req.params.id;
+    
+    //const userId      = jwtUtils.getUserId(headerAuth);
 
          asyncLib.waterfall([
-            function(done) {
-                models.User.findOne({ 
-                    where: { id: userId } })
-                .then(function(userFound) {
-                    done(null, userFound);
-                })
-                .catch(function(err) {
-                    return res.status(500).json({ 'error': 'unable to verify user' });
-                });
-            },
-            function(userFound,done) {
-                if (userFound) {
+            function(done) {              
                 models.Post.findOne({
-                    where: {id: postId},
                     attributes: [ 'title', 'content', 'attachment' ],
+                    where: {id: postId}
                     })
                     .then(function (postToUpdate) {
                         done(null, postToUpdate); 
                     })
-                    .catch(function(err) {
-                    return res.status(500).json({ 'error': 'unable to verify post' });
+                    .catch(function(err) {console.log("///***",postToUpdate)
+                        return res.status(500).json({ 'error': 'unable to verify post' });
                     });
-                } else {
-                    res.status(404).json({ 'error': 'user not found' });
-                    }
             },////////////////////////JE ME SUIS ARRÊTÉ lÀ/////////////////
-            function(postToUpdate, userFound, done) {
-              if(postToUpdate) {console.log('*-*-*-->',postToUpdate);
+            function(postToUpdate, done) {
+              if(postToUpdate) {
                 postoUpdate.update({
                   title: (title ? title : postToUpdate.title),
                   content: (content ? content : postToUpdate.content),  

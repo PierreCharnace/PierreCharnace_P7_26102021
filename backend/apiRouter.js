@@ -21,18 +21,13 @@ exports.router = (function() {
     //Posts routes
     apiRouter.post ('/posts/new', postsCtrl.createPost);
     apiRouter.get  ('/posts/', postsCtrl.listPosts);
-    apiRouter.put  ('/posts/update/', postsCtrl.updatePost);
+    apiRouter.put  ('/posts/update/:id', postsCtrl.updatePost);
     apiRouter.delete('/posts/delete/', postsCtrl.deleteOnePost);
  
     //Comments routes
     apiRouter.post ('/comments/new', commentsCtrl.createComment);
 //   apiRouter.delete ('/comments/delete', commentsCtrl.deleteComment);
     
-                       //    ||    
-    //Likes routes       for \/ specify name parameter
-   // apiRouter.route('/posts/:postId/like').post(likesCtrl.likePost);
-   // apiRouter.route('/posts/:postId/dislike').post(likesCtrl.dislikePost);
-    //apiRouter.route('/posts/:id/like').post(likeOrDislikePost.likeOrDislikePost);
     return apiRouter;
 })();
 

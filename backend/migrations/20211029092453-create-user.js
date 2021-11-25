@@ -21,10 +21,6 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      birthday: {
-        allowNull: true,
-        type: Sequelize.INTEGER
-      },
       password: {
         allowNull: false,
         type: Sequelize.STRING
@@ -36,9 +32,6 @@ module.exports = {
         allowNull: false,
         type: sequelize.BOOLEAN
       },
-      isEnable: {
-        type: Sequelize.BOOLEAN
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -47,10 +40,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       },
-      paranoid: {
+      deletedAt: {
         allowNull: true,
-        type: Sequelize.BOOLEAN
-      },
+        type: Sequelize.DATE
+    }
     });
   },
   down: async (queryInterface, Sequelize) => {

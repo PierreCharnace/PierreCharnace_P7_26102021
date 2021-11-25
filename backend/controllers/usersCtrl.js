@@ -17,9 +17,8 @@ module.exports = {
         const encryptEmail = cryptojs.HmacSHA256(req.body.email, process.env.ENCRYPTEDKEYEMAIL).toString();
         const lastName = req.body.lastName;
         const firstName = req.body.firstName;
-        const birthday = req.body.birthday;
         const password = req.body.password;
-        const profilePictures = req.body.profilePictures;
+        const profilePictures = "https://pic.onlinewebfonts.com/svg/img_24787.png";
 
         if (email == null || lastName == null || firstName == null || password == null) {
             return res.status(400).json({ 'error': 'paramètres manquants' });
@@ -38,6 +37,7 @@ module.exports = {
         }
 
         asyncLib.waterfall([
+          //check if user exist
             function (done) {
                 models.User.findOne({
                     attributes: ['email'],
@@ -49,7 +49,7 @@ module.exports = {
                 .catch(function(err) {
                     return res.status(500).json({ 'error': 'unable to verify user'});
                 });
-            },
+            },// If not, Hash the password
             function(userFound, done) {
                 if (!userFound) {
                   bcrypt.hash(password, 5, function( err, bcryptedPassword ) {
@@ -58,23 +58,21 @@ module.exports = {
                 } else {
                   return res.status(409).json({ 'error': 'user already exist' });
                 }
-            },
+            }, // Create User in DB
         function(userFound, bcryptedPassword, done) {
                 const newUser = models.User.create({
                     email     : encryptEmail,
                     lastName  : lastName,
                     firstName : firstName,                       
-                    birthday  : birthday,
                     password  : bcryptedPassword,
                     profilePictures : profilePictures,
-                    isEnable : 0,
                     isAdmin : 0
                 })
                 .then(function(newUser) {
                     done(newUser);
                 })
-                .catch(function(err) {
-                    return res.status(500).json({ 'error': 'cannot add user'});
+                .catch(function(err) {console.log('-->',newUser,);
+                    return res.status(500).json({ 'error': 'unable add user'});
                 });
             }
         ], function (newUser) {
@@ -172,7 +170,7 @@ module.exports = {
           attributes: [ 'id','lastName', 'firstName', 'birthday', 'profilePictures' ],
           where: { id: userId}
         }).then(function (userFound) {//return user
-          done(null, userFound); // next function with done
+            done(null, userFound); // next function with done
         })
         .catch(function(err) {
           return res.status(500).json({ 'error': 'unable to verify user' });
@@ -180,7 +178,7 @@ module.exports = {
       },
       function(userFound, done) {
         if(userFound) {
-          userFound.update({
+          userFound.update({    
             lastName: (lastName ? lastName : userFound.lastName),
             firstName: (firstName ? firstName : userFound.firstName),
             birthday: (birthday ? birthday : userFound.birthday),                           // verify if birthday and profilePictures is valid in req, if ok, 
