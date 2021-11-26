@@ -22,7 +22,7 @@ exports.router = (function() {
     apiRouter.post ('/posts/new', postsCtrl.createPost);
     apiRouter.get  ('/posts/', postsCtrl.listPosts);
     apiRouter.put  ('/posts/update/:id', postsCtrl.updatePost);
-    apiRouter.delete('/posts/delete/', postsCtrl.deleteOnePost);
+    apiRouter.delete('/posts/delete/:id', postsCtrl.deleteOnePost);
  
     //Comments routes
     apiRouter.post ('/comments/new', commentsCtrl.createComment);
