@@ -94,20 +94,61 @@ module.exports = {
         const userId      = jwtUtils.getUserId(headerAuth);
         const postId = req.params.id;
         console.log('--->',postId);
-        models.Post.findOne({ 
-     
-            where: { id: postId} })
-        .then(post=> {
-           // const filename = post.attachment.split('/images/')[1];//extract name to delete
-           // fs.unlink(`images/${filename}`, () => { // delete with fs.unlink
-                models.Post.deleteOne({
-                    where: {id : postId} })
-            .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
-            .catch(error => res.status(404).json({ error }));
-           // })
-        })
-        .catch(error => res.status(500).json({ message: 'Erreur serveur' }))
-        
+        console.log('////',userId);
+        asyncLib.waterfall([
+
+            // Checks if the request is sent from an registered user
+            function(done) {
+                models.User.findOne({
+                        where: { id: userId }
+                    }).then(function(userFound) {
+                        done(null, userFound);
+                    })
+                    .catch(function(err) {
+                        return res.status(500).json({ 'error': 'unable to verify user' });
+                    });
+            },
+
+            // Get the targeted post infos
+            function(userFound, done) {
+                Post.findOne({
+                        where: { id: req.params.id }
+                    })
+                    .then(function(postFound) {
+                        done(null, userFound, postFound);
+                    })
+                    .catch(function(err) {
+                        return res.status(500).json({ 'error': 'Post not found' });
+                    });
+            },
+
+            function(userFound, postFound) {
+
+                // Checks if the user is the owner of the targeted one
+                if (userFound.id == postFound.userId || userFound.isAdmin == true) { // or if he's admin
+
+                    // Soft-deletion modifying the post the ad a timestamp to deletedAt
+                    Post.destroy({
+                            where: { id: req.params.id }
+                        })
+                        .then(() => res.status(200).json({ message: 'Post supprimé !' }))
+                        .catch(error => res.status(400).json({ message: "Post introuvable", error: error }))
+
+                } else {
+                    res.status(401).json({ 'error': 'user not allowed' });
+                }
+            },
+        ],
+
+        function(userFound) {
+            if (userFound) {
+                return res.status(201).json({ 'message': 'post deleted' });
+            } else {
+                return res.status(500).json({ 'error': 'cannot delete post' });
+            }
+        });
+       
+
     },
 
     updatePost: (req, res) => {
