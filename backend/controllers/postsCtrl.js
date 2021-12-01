@@ -93,10 +93,7 @@ module.exports = {
         const headerAuth  = req.headers['authorization'];
         const userId      = jwtUtils.getUserId(headerAuth);
         const postId = req.params.id;
-        console.log('--->',postId);
-        console.log('////',userId);
         asyncLib.waterfall([
-
             // Checks if the request is sent from an registered user
             function(done) {
                 models.User.findOne({
@@ -111,8 +108,8 @@ module.exports = {
 
             // Get the targeted post infos
             function(userFound, done) {
-                Post.findOne({
-                        where: { id: req.params.id }
+                models.Post.findOne({
+                        where: { id: postId }
                     })
                     .then(function(postFound) {
                         done(null, userFound, postFound);
@@ -125,17 +122,17 @@ module.exports = {
             function(userFound, postFound) {
 
                 // Checks if the user is the owner of the targeted one
-                if (userFound.id == postFound.userId || userFound.isAdmin == true) { // or if he's admin
+                if (userFound.id == postFound.UserId || userFound.isAdmin == true) { // or if he's admin
 
                     // Soft-deletion modifying the post the ad a timestamp to deletedAt
-                    Post.destroy({
+                    models.Post.destroy({
                             where: { id: req.params.id }
                         })
                         .then(() => res.status(200).json({ message: 'Post supprimé !' }))
                         .catch(error => res.status(400).json({ message: "Post introuvable", error: error }))
 
                 } else {
-                    res.status(401).json({ 'error': 'user not allowed' });
+                    res.status(401).json({ 'error': postFound.UserId });
                 }
             },
         ],
