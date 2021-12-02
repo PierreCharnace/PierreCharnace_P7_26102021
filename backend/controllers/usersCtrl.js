@@ -71,10 +71,10 @@ module.exports = {
                 .then(function(newUser) {
                     done(newUser);
                 })
-                .catch(function(err) {console.log('-->',newUser,);
+                .catch(function(err) {console.log('-->',);
                     return res.status(500).json({ 'error': 'unable add user'});
                 });
-            }
+            }// after creat return new userId
         ], function (newUser) {
             if (newUser) {
                 return res.status(201).json({

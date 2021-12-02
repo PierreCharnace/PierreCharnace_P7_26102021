@@ -74,7 +74,7 @@ module.exports = {
             offset: (!isNaN(offset)) ? offset : null,
             include: [{
                 model: models.User,
-                attributes: [ 'lastName', 'firstName']
+                attributes: [ 'lastName', 'firstName', 'profilePictures','isAdmin']
             }]
         }).then(function(posts) {
             if (posts) {
@@ -93,6 +93,7 @@ module.exports = {
         const headerAuth  = req.headers['authorization'];
         const userId      = jwtUtils.getUserId(headerAuth);
         const postId = req.params.id;
+
         asyncLib.waterfall([
             // Checks if the request is sent from an registered user
             function(done) {
@@ -144,8 +145,6 @@ module.exports = {
                 return res.status(500).json({ 'error': 'cannot delete post' });
             }
         });
-       
-
     },
 
     updatePost: (req, res) => {
