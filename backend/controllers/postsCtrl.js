@@ -15,7 +15,7 @@ module.exports = {
         // Params
         const title = req.body.title;
         const content = req.body.content;
-        const attachment = req.body.attachment;
+        const attachment = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null;
 
         if (title == null || content == null) {
             return res.status(400).json({ 'error': 'missing parameters' });
@@ -26,6 +26,7 @@ module.exports = {
             
         }
         asyncLib.waterfall([
+            
             function(done) {
                 models.User.findOne({ 
                     where: { id: userId } })
@@ -42,7 +43,6 @@ module.exports = {
                         title   : title,
                         content : content,
                         attachment: attachment,
-                        likes   : 0,
                         UserId  : userFound.id
                     })
                     .then(function(newPost) {
@@ -55,7 +55,7 @@ module.exports = {
         ], 
         function(newPost) {
             if (newPost) {
-                return res.status(201).json({ newPost});
+                return res.status(201).json({ newPost });
             } else {
                 return res.status(500).json({ 'error': 'cannot send posts'});
             }

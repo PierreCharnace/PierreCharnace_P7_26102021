@@ -1,6 +1,6 @@
 //imports
 const bcrypt = require('bcryptjs');
-const jwtUtils = require('../middleware/jwt.utils');
+//const jwtUtils = require('../middleware/jwt.utils');
 const models = require('../models');
 const cryptojs = require('crypto-js');
 const asyncLib = require('async');
