@@ -28,7 +28,7 @@ exports.router = (function() {
     //Comments routes
     apiRouter.post ('/:id/comments/new', commentsCtrl.createComment);
     apiRouter.get ('/comments/', commentsCtrl.listComments);
-    apiRouter.delete ('/:id/comments/delete', commentsCtrl.deleteComment);
+    apiRouter.delete ('/comments/delete/:id', commentsCtrl.deleteComment);
     
     return apiRouter;
 })();

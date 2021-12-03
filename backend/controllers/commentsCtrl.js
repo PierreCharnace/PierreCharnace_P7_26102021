@@ -1,8 +1,7 @@
 //Imports
 const models = require('../models');
-const db = require("../models/index");
-const asyncLib = require('async');
 const jwtUtils = require('../middleware/jwt.utils')
+const asyncLib = require('async');
 
 
 module.exports = {
@@ -11,8 +10,6 @@ module.exports = {
         const headerAuth = req.headers['authorization'];
         const userId = jwtUtils.getUserId(headerAuth);
         const postId = req.params.id;
-
-
         // Params
         const content = req.body.content;
 
@@ -37,19 +34,19 @@ module.exports = {
                         models.Comment.create({
                         content : content,
                         UserId: userFound.id,
-                        postId: req.params.id,
+                        postId: postId,
                     })
                     .then(function(newComment) {
                         done(newComment);
                     });
                 } else {
-                    res.status(404).json({ 'error': userId });
+                    res.status(404).json({ 'error': 'user not found' });
                 }
             },
         ], 
         function(newComment) {
             if (newComment) {
-                return res.status(201).json({ newPost});
+                return res.status(201).json({ newComment});
             } else {
                 return res.status(500).json({ 'error': 'cannot send posts'});
             }
@@ -57,16 +54,16 @@ module.exports = {
     },
 
     listComments: function(req, res, next) {
-     //   const fields = req.query.fields; // column when we need to display
-     //   const limit = parseInt(req.query.limit);  //|get posts by segmentation ( 20 posts per leaf)
-      //  const offset = parseInt(req.query.offset); //|
-       // const order = req.query.order; // get posts by particular order
+        const fields = req.query.fields; // column when we need to display
+        const limit = parseInt(req.query.limit);  //|get posts by segmentation ( 20 posts per leaf)
+        const offset = parseInt(req.query.offset); //|
+        const order = req.query.order; // get posts by particular order
 
         models.Comment.findAll({
-     //       order: [(order != null) ? order.split(':') : ['title', 'ASC']],
-     //       attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
-     //       limit: (!isNaN(limit)) ? limit : null,
-       //     offset: (!isNaN(offset)) ? offset : null,
+          order: [(order != null) ? order.split(':') : ['content', 'ASC']],
+          attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
+          limit: (!isNaN(limit)) ? limit : null,
+          offset: (!isNaN(offset)) ? offset : null,
             include: [{
                 model: models.User,
                 attributes: [ 'lastName', 'firstName', 'profilePictures', 'isAdmin']
@@ -83,30 +80,30 @@ module.exports = {
 
     },
    
-    deleteComment: (req, res) => {
+    deleteComment: (req, res, next) => {
         
         const headerAuth  = req.headers['authorization'];
         const userId      = jwtUtils.getUserId(headerAuth);
-        const postId = req.params.id;
-
+        const commentsId = req.params.id;
+        //console.log(userId);
+   
         asyncLib.waterfall([
 
-            // Checks if the request is sent from an registered user
             function(done) {
-                models.User.findOne({
-                        where: { id: userId }
-                    }).then(function(userFound) {
-                        done(null, userFound);
-                    })
-                    .catch(function(err) {
-                        return res.status(500).json({ 'error': 'unable to verify user' });
-                    });
+                models.User.findOne({ 
+                    where: { id: userId } })
+                .then(function(userFound) {
+                    done(null, userFound);
+                })
+                .catch(function(err) {
+                    return res.status(500).json({ 'error': commentsId });
+                });
             },
 
             // Get the targeted comment infos
             function(userFound, done) {
-                models.Post.findOne({
-                        where: { id: postId}
+                models.Comments.findOne({
+                        where: { id: commentsId}
                     })
                     .then(function(commentFound) {
                         done(null, userFound, commentFound);
@@ -116,14 +113,14 @@ module.exports = {
                     });
             },
 
-            function(userFound, commentFound, done) {
+            function(userFound, commentFound) {
 
                 // Checks if the user is the owner of the targeted one
-                if (userFound.id == commentFound.UserId || userFound.isAdmin == true) { // or if he's admin
+                if (userFound.id == commentFound.UserId || userFound.isAdmin == true || userFound.isModo == true) { // or if he's admin
 
                     // Soft-deletion modifying the post the ad a timestamp to deletedAt
                     models.Comment.destroy({
-                            where: { id: req.params.id }
+                            where: { id: commentsId }
                         })
                         .then(() => res.status(200).json({ message: 'Commentaire supprimé !' }))
                         .catch(error => res.status(400).json({ error }));

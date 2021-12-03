@@ -11,7 +11,6 @@ module.exports = {
          // Getting auth header
         const headerAuth = req.headers['authorization'];
         const userId = jwtUtils.getUserId(headerAuth);
-
         // Params
         const title = req.body.title;
         const content = req.body.content;
@@ -23,8 +22,8 @@ module.exports = {
 
         if (title.length <= TITLE_LIMIT || content.length <= CONTENT_LIMIT) {
             return res.status(400).json({ 'error': 'invalid parameters' });
-            
         }
+
         asyncLib.waterfall([
             
             function(done) {
@@ -123,11 +122,11 @@ module.exports = {
             function(userFound, postFound) {
 
                 // Checks if the user is the owner of the targeted one
-                if (userFound.id == postFound.UserId || userFound.isAdmin == true) { // or if he's admin
+                if (userFound.id == postFound.UserId || userFound.isAdmin == true || userFound.isModo == true) { // or if he's admin
 
                     // Soft-deletion modifying the post the ad a timestamp to deletedAt
                     models.Post.destroy({
-                            where: { id: req.params.id }
+                            where: { id: postId }
                         })
                         .then(() => res.status(200).json({ message: 'Post supprimé !' }))
                         .catch(error => res.status(400).json({ message: "Post introuvable", error: error }))

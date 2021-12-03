@@ -22,7 +22,9 @@ module.exports = {
                 const jwtToken = jwt.verify(token, process.env.JWTSIGNSECRET);
                 if(jwtToken != null)
                 userId = jwtToken.userId;
-            } catch(err) { }
+            } catch(err) { 
+                return res.status(500).json({ 'error': 'Vous n\'êtes pas identifier' });
+            }
         }
         return userId;
     }   
