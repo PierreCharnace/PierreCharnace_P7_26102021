@@ -1,9 +1,6 @@
 //Imports
 const models = require('../models');
 const db = require("../models/index");
-const Post = db.post;
-const User = db.user;
-const Comment = db.comment;
 const asyncLib = require('async');
 const jwtUtils = require('../middleware/jwt.utils')
 
@@ -17,7 +14,7 @@ module.exports = {
 
 
         // Params
-        const content = req.body;
+        const content = req.body.content;
 
         if (content == null) {
             return res.status(400).json({ 'error': 'missing parameters' });
@@ -26,7 +23,7 @@ module.exports = {
         asyncLib.waterfall([
             
             function(done) {
-                User.findOne({ 
+                models.User.findOne({ 
                     where: { id: userId } })
                 .then(function(userFound) {
                     done(null, userFound);
@@ -37,16 +34,16 @@ module.exports = {
             },
             function(userFound, done) {
                 if(userFound) {
-                        Comment.create({
+                        models.Comment.create({
                         content : content,
-                        userId: userFound.id,
+                        UserId: userFound.id,
                         postId: req.params.id,
                     })
                     .then(function(newComment) {
                         done(newComment);
                     });
                 } else {
-                    res.status(404).json({ 'error': 'user not found' });
+                    res.status(404).json({ 'error': userId });
                 }
             },
         ], 

@@ -1,10 +1,10 @@
 //imports
 const bcrypt = require('bcryptjs');
-//const jwtUtils = require('../middleware/jwt.utils');
+const jwtUtils = require('../middleware/jwt.utils');
+
 const models = require('../models');
 const cryptojs = require('crypto-js');
 const asyncLib = require('async');
-const jwt = require('jsonwebtoken');
 require('dotenv').config({path: './config/.env'});
 //Constants
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -66,7 +66,8 @@ module.exports = {
                     firstName : firstName,                       
                     password  : bcryptedPassword,
                     profilePictures : profilePictures,
-                    isAdmin : 0
+                    isAdmin : 0,
+                    isModo : 0
                 })
                 .then(function(newUser) {
                     done(newUser);
@@ -134,6 +135,51 @@ module.exports = {
       }
     });
   },
+
+  getAllProfile: function(req, res) {
+    const headerAuth = req.headers['authorization'];
+    const userId = jwtUtils.getUserId(headerAuth);
+    
+    asyncLib.waterfall([
+      // verify if user exist
+      function(done) {
+        models.User.findOne({
+                where: { id: userId }
+            })
+            .then(function(userFound) {
+                done(null, userFound);
+            })
+            .catch(function(err) {
+                return res.status(500).json({ 'error': 'unable to verify user' });
+            });
+    },
+    //If is found, get all user Profile
+      function(userFound, done) {
+        if (userFound && userFound.isAdmin == 1) {
+            models.User.findAll({
+                    attributes: ['id', 'lastName', 'firstname', 'email', 'profilePictures', 'isAdmin', 'createdAt']
+                })
+                .then(function(users) {
+                    done(users)
+                }).catch(function(err) {
+                    console.log(err);
+                    res.status(500).json({ "error": "invalid fields" });
+                });
+        } else {
+            res.status(404).json({ 'error': 'user not allowed' });
+        }
+    },
+    ],
+    function(users) {
+      if (users) {
+          return res.status(201).json(users);
+      } else {
+          return res.status(500).json({ 'error': 'cannot send users' });
+      }
+  })
+    
+},
+
   getUserProfile: function(req, res) {
     const headerAuth  = req.headers['authorization'];
     const userId      = jwtUtils.getUserId(headerAuth);
