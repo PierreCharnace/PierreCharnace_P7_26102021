@@ -1,9 +1,9 @@
 //imports
 const bcrypt = require('bcryptjs');
 const jwtUtils = require('../middleware/jwt.utils');
+
 const db = require("../models/index");
 const User = db.user;
-const models = require('../models');
 const cryptojs = require('crypto-js');
 const asyncLib = require('async');
 require('dotenv').config({path: './config/.env'});
@@ -61,7 +61,7 @@ module.exports = {
                 }
             }, // Create User in DB
         function(userFound, bcryptedPassword, done) {
-                let newUser = models.User.create({
+                let newUser = User.create({
                     email     : encryptEmail,
                     lastName  : lastName,
                     firstName : firstName,                       
@@ -100,7 +100,7 @@ module.exports = {
 
         asyncLib.waterfall([
       function(done) {
-        models.User.findOne({ 
+        User.findOne({ 
           where: { email: encryptEmail }})
         .then(function(userFound) {
           done(null, userFound);
@@ -144,7 +144,7 @@ module.exports = {
     asyncLib.waterfall([
       // verify if user exist
       function(done) {
-        models.User.findOne({
+        User.findOne({
                 where: { id: userId }
             })
             .then(function(userFound) {
@@ -157,7 +157,7 @@ module.exports = {
     //If is found, get all user Profile
       function(userFound, done) {
         if (userFound && userFound.isAdmin == 1) {
-            models.User.findAll({
+            User.findAll({
                     attributes: ['id', 'lastName', 'firstname', 'email', 'profilePictures', 'isAdmin', 'createdAt']
                 })
                 .then(function(users) {
@@ -188,7 +188,7 @@ module.exports = {
     if (userId < 0)
       return res.status(400).json({ 'error': 'wrong token' });
 
-    models.User.findOne({
+    User.findOne({
       attributes: [ 'id', 'lastName', 'firstName', 'email', 'birthday', 'profilePictures' ],
       where: { id: userId}
     })
@@ -213,7 +213,7 @@ module.exports = {
 
     asyncLib.waterfall([
       function(done) {
-        models.User.findOne({
+        User.findOne({
           attributes: [ 'id','lastName', 'firstName', 'birthday', 'profilePictures' ],
           where: { id: userId}
         }).then(function (userFound) {//return user
@@ -247,13 +247,14 @@ module.exports = {
         }
       });
       },
+      
   deleteProfile: function(req, res) {
     const headerAuth  = req.headers['authorization'];
     const userId      = jwtUtils.getUserId(headerAuth);
 
     asyncLib.waterfall([
       function(done) {
-        models.User.findOne({ 
+        User.findOne({ 
             where: { id: userId } })
         .then(function(userFound) {
             done(null, userFound);
@@ -262,20 +263,22 @@ module.exports = {
             return res.status(500).json({ 'error': 'unable to verify user' });
         });
     },
-    async() => {
-       await models.User.destroy({
-          where: {
-            id: userId,
-            attributes: [ 'id','lastName', 'firstName', 'birthday', 'profilePictures' ],
-          }
-          .then(() => res.status(200).json({ message: ' ' }))
-          .catch(function(err) {
-            return res.status(500).json({ 'error': 'unable to delete user profile'});
-         })
-        });
+    function(userFound, done) {
+
+      // Checks if the user is the owner of the targeted one
+      if (userFound.id == req.body.userId || userFound.isAdmin == true) { // or if he's admin
+
+          // Soft-deletion modifying the post the ad a timestamp to deletedAt
+          User.destroy({
+                  where: { id: req.params.id }
+              })
+              .then(() => res.status(200).json({ message: 'Utilisateur supprimé' })) // send confirmation if done
+              .catch(error => res.status(500).json({ 'error': 'cannot delete user' }))
+
+      } else {
+          res.status(401).json({ 'error': 'user not allowed' });
       }
+      },
     ])
-   
-     
     },
 }

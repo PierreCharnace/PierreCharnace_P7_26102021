@@ -2,6 +2,9 @@
 const models = require('../models');
 const asyncLib = require('async');
 const jwtUtils = require('../middleware/jwt.utils')
+const db = require("../models/index");
+const User = db.user;
+const Post = db.post;
 // Constants
 const TITLE_LIMIT = 2;
 const CONTENT_LIMIT = 4;
@@ -91,12 +94,12 @@ module.exports = {
         
         const headerAuth  = req.headers['authorization'];
         const userId      = jwtUtils.getUserId(headerAuth);
-        const postId = req.params.id;
+        const postId      = req.params.id;
 
         asyncLib.waterfall([
             // Checks if the request is sent from an registered user
             function(done) {
-                models.User.findOne({
+                User.findOne({
                         where: { id: userId }
                     }).then(function(userFound) {
                         done(null, userFound);
@@ -108,7 +111,7 @@ module.exports = {
 
             // Get the targeted post infos
             function(userFound, done) {
-                models.Post.findOne({
+                Post.findOne({
                         where: { id: postId }
                     })
                     .then(function(postFound) {
@@ -125,14 +128,14 @@ module.exports = {
                 if (userFound.id == postFound.UserId || userFound.isAdmin == true || userFound.isModo == true) { // or if he's admin
 
                     // Soft-deletion modifying the post the ad a timestamp to deletedAt
-                    models.Post.destroy({
+                    Post.destroy({
                             where: { id: postId }
                         })
                         .then(() => res.status(200).json({ message: 'Post supprimé !' }))
                         .catch(error => res.status(400).json({ message: "Post introuvable", error: error }))
 
                 } else {
-                    res.status(401).json({ 'error': postFound.UserId });
+                    res.status(401).json({ 'error': "user not allowed" });
                 }
             },
         ],
@@ -153,7 +156,7 @@ module.exports = {
     const content = req.body.content;
     const attachment = req.body.attachment;
     
-    //const userId      = jwtUtils.getUserId(headerAuth);
+    const userId      = jwtUtils.getUserId(headerAuth);
 
          asyncLib.waterfall([
             function(done) {              
@@ -164,10 +167,10 @@ module.exports = {
                     .then(function (postToUpdate) {
                         done(null, postToUpdate); 
                     })
-                    .catch(function(err) {console.log("///***",postToUpdate)
+                    .catch(function(err) {
                         return res.status(500).json({ 'error': 'unable to verify post' });
                     });
-            },////////////////////////JE ME SUIS ARRÊTÉ lÀ/////////////////
+            },/////////////////////////////////////////
             function(postToUpdate, done) {
               if(postToUpdate) {
                 postoUpdate.update({

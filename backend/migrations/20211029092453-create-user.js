@@ -32,6 +32,10 @@ module.exports = {
         allowNull: false,
         type: sequelize.BOOLEAN
       },
+      isModo: {
+        allowNull: false,
+        type: sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
