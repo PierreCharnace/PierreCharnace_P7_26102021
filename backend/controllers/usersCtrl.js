@@ -1,7 +1,8 @@
 //imports
 const bcrypt = require('bcryptjs');
 const jwtUtils = require('../middleware/jwt.utils');
-
+const db = require("../models/index");
+const User = db.user;
 const models = require('../models');
 const cryptojs = require('crypto-js');
 const asyncLib = require('async');
@@ -39,7 +40,7 @@ module.exports = {
         asyncLib.waterfall([
           //check if user exist
             function (done) {
-                models.User.findOne({
+                User.findOne({
                     attributes: ['email'],
                     where: { email: encryptEmail }
                 })
@@ -60,7 +61,7 @@ module.exports = {
                 }
             }, // Create User in DB
         function(userFound, bcryptedPassword, done) {
-                const newUser = models.User.create({
+                let newUser = models.User.create({
                     email     : encryptEmail,
                     lastName  : lastName,
                     firstName : firstName,                       

@@ -1,5 +1,9 @@
 //Imports
 const models = require('../models');
+const db = require("../models/index");
+const Comment = db.comment;
+const User = db.user;
+
 const jwtUtils = require('../middleware/jwt.utils')
 const asyncLib = require('async');
 
@@ -12,15 +16,15 @@ module.exports = {
         const postId = req.params.id;
         // Params
         const content = req.body.content;
-
+        console.log("///////////////////////////////////////",userId);
         if (content == null) {
             return res.status(400).json({ 'error': 'missing parameters' });
         }
 
         asyncLib.waterfall([
             
-            function(done) {
-                models.User.findOne({ 
+            function(done) {//1///////////////////
+                User.findOne({ 
                     where: { id: userId } })
                 .then(function(userFound) {
                     done(null, userFound);
@@ -29,41 +33,44 @@ module.exports = {
                     return res.status(500).json({ 'error': 'unable to verify user' });
                 });
             },
-            function(userFound, done) {
+            function(userFound, done) {//2////////////////////
                 if(userFound) {
-                        models.Comment.create({
+                    Comment.create({
                         content : content,
                         UserId: userFound.id,
                         postId: postId,
                     })
                     .then(function(newComment) {
-                        done(newComment);
+                        done(newComment);    
+                    })
+                    .catch(function(err) {
+                        return res.status(500).json({ 'error': postId });
                     });
                 } else {
                     res.status(404).json({ 'error': 'user not found' });
                 }
             },
         ], 
-        function(newComment) {
+        function(newComment) {///////////////////3
             if (newComment) {
-                return res.status(201).json({ newComment});
+                return res.status(201).json({ newComment });
             } else {
-                return res.status(500).json({ 'error': 'cannot send posts'});
+                return res.status(500).json({ 'error': 'cannot send comments'});
             }
         });
     },
 
     listComments: function(req, res, next) {
-        const fields = req.query.fields; // column when we need to display
-        const limit = parseInt(req.query.limit);  //|get posts by segmentation ( 20 posts per leaf)
-        const offset = parseInt(req.query.offset); //|
-        const order = req.query.order; // get posts by particular order
+        //const fields = req.query.fields; // column when we need to display
+       // const limit = parseInt(req.query.limit);  //|get posts by segmentation ( 20 posts per leaf)
+       // const offset = parseInt(req.query.offset); //|
+      //  const order = req.query.order; // get posts by particular order
 
-        models.Comment.findAll({
-          order: [(order != null) ? order.split(':') : ['content', 'ASC']],
-          attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
-          limit: (!isNaN(limit)) ? limit : null,
-          offset: (!isNaN(offset)) ? offset : null,
+        Comment.findAll({
+       //   order: [(order != null) ? order.split(':') : ['content', 'ASC']],
+       //   attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
+      //    limit: (!isNaN(limit)) ? limit : null,
+        //  offset: (!isNaN(offset)) ? offset : null,
             include: [{
                 model: models.User,
                 attributes: [ 'lastName', 'firstName', 'profilePictures', 'isAdmin']
@@ -90,7 +97,7 @@ module.exports = {
         asyncLib.waterfall([
 
             function(done) {
-                models.User.findOne({ 
+                User.findOne({ 
                     where: { id: userId } })
                 .then(function(userFound) {
                     done(null, userFound);
@@ -102,7 +109,7 @@ module.exports = {
 
             // Get the targeted comment infos
             function(userFound, done) {
-                models.Comments.findOne({
+                Comment.findOne({
                         where: { id: commentsId}
                     })
                     .then(function(commentFound) {
@@ -119,7 +126,7 @@ module.exports = {
                 if (userFound.id == commentFound.UserId || userFound.isAdmin == true || userFound.isModo == true) { // or if he's admin
 
                     // Soft-deletion modifying the post the ad a timestamp to deletedAt
-                    models.Comment.destroy({
+                    Comment.destroy({
                             where: { id: commentsId }
                         })
                         .then(() => res.status(200).json({ message: 'Commentaire supprimé !' }))
