@@ -158,7 +158,7 @@ module.exports = {
       function(userFound, done) {
         if (userFound && userFound.isAdmin == 1) {
             User.findAll({
-                    attributes: ['id', 'lastName', 'firstname', 'email', 'profilePictures', 'isAdmin', 'createdAt']
+                    attributes: ['id', 'lastName', 'firstname', 'email', 'profilePictures', 'isAdmin', 'isModo', 'createdAt']
                 })
                 .then(function(users) {
                     done(users)
@@ -189,7 +189,7 @@ module.exports = {
       return res.status(400).json({ 'error': 'wrong token' });
 
     User.findOne({
-      attributes: [ 'id', 'lastName', 'firstName', 'email', 'birthday', 'profilePictures' ],
+      attributes: [ 'id', 'lastName', 'firstName', 'email', 'profilePictures' ],
       where: { id: userId}
     })
     .then(function(user) {
@@ -214,7 +214,7 @@ module.exports = {
     asyncLib.waterfall([
       function(done) {
         User.findOne({
-          attributes: [ 'id','lastName', 'firstName', 'birthday', 'profilePictures' ],
+          attributes: [ 'id','lastName', 'firstName', 'profilePictures' ],
           where: { id: userId}
         }).then(function (userFound) {//return user
             done(null, userFound); // next function with done

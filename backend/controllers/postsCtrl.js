@@ -138,15 +138,7 @@ module.exports = {
                     res.status(401).json({ 'error': "user not allowed" });
                 }
             },
-        ],
-
-        function(userFound) {
-            if (userFound) {
-                return res.status(201).json({ 'message': 'post deleted' });
-            } else {
-                return res.status(500).json({ 'error': 'cannot delete post' });
-            }
-        });
+        ]);
     },
 
     updatePost: (req, res) => {
@@ -191,7 +183,7 @@ module.exports = {
         if (userFound) {
           return res.status(201).json(userFound);
         } else {
-          return res.status(500).json({ 'error': 'cannot update user profile' });
+          return res.status(500).json({ 'error': 'cannot update posts' });
         }
       });
     }
