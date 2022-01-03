@@ -1,6 +1,6 @@
 <template>
   <div class="home">
- <b-button variant="success">
+ <b-button variant="success" class="col-1">
    Youhou
  </b-button>
   </div>
@@ -8,12 +8,5 @@
 
 <script>
 // @ is an alias to /src
-import Header from '../components/Header.vue'
 
-export default {
-  name: 'Home',
-  components: {
-    Header
-  }
-}
 </script>
