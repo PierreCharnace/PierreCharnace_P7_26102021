@@ -1,8 +1,6 @@
 <template>
   <div class="home">
- <b-button variant="success" class="col-1">
-   Youhou
- </b-button>
+  <h1 class=" hhome display-1 py-5">Bienvenue sur le réseau social d'entreprise de Groupomania</h1>
   </div>
 </template>
 
@@ -10,3 +8,18 @@
 // @ is an alias to /src
 
 </script>
+
+<style lang='scss'>
+
+.hhome {
+  margin-bottom: 0;
+}
+
+@media ( min-width: 1440px) {
+  .home {
+    height: 500px;
+  }  
+}
+
+
+</style>
