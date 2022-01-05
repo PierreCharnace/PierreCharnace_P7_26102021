@@ -22,6 +22,9 @@ export default {
 
 <style lang='scss'>
 
-
+footer {
+  position: fixed;
+  bottom: 0;
+}
 
 </style>

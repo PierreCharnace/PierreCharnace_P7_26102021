@@ -37,7 +37,6 @@ export default {
 
 <style scoped>
   .buttonform {
-
     border: solid 1px black!important;
   }
 </style>
