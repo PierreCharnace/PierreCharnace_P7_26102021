@@ -10,10 +10,10 @@
         <input v-model="password" required id="password" type="password" class="col-5" placeholder="mode de passe">
       </div>
       <div class="row mt-1" v-if="status == 'error_login'"> Adresse mail et/ou mot de passe invalide</div>
-      <b-button @click="login()" class="row buttonform mt-2 mb-2" >
+      <button @click="login()" class="buttonform mt-2 mb-2" >
         <span v-if="status == 'loading'">Connexion en cours...</span>
         <span v-else> Connexion</span>
-      </b-button>
+      </button>
       
     </form>
   </div>
@@ -42,7 +42,7 @@ export default {
         email: this.email,
         password: this.password      
       }).then( function () {
-        self.$router.push('/profile')
+        self.$router.push('/wall')
       }), (function (error) {
         console.log(error);
       })

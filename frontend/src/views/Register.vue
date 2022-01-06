@@ -14,9 +14,11 @@
         <input v-model="email" id="email" required type="email" class="col-5" placeholder="Adresse mail">
       </div>
       <div class="row mt-1">
-        <input v-model="password" required id="password" type="password" class="col-5" placeholder="mot de passe">
+        <input v-model="password" required="veuillez" id="password" type="password" class="col-5" placeholder="mot de passe">
       </div>
-      <b-button @click="createAccount()" class="row buttonform mt-2 mb-2" >Créer mon compte</b-button>
+      <button @click="createAccount()" class="buttonform mt-2 mb-2" >
+       <span v-if="validateFields == false"> Veuillez remplir les champs</span>
+       <span v-else >Créer mon compte</span> </button>
     </form>
 </div>
 </template>
@@ -34,6 +36,18 @@ export default {
     password: ''
     }
   },
+  computed : {
+
+
+    validateFields: function () {
+      if (this.lastName !="" && this.firstName !="" && this.email != "" && this.password != "") {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  },
+
   methods: {
     createAccount: function () {
       const self = this;
@@ -43,7 +57,7 @@ export default {
         firstName:  this.firstName,
         password:   this.password
       }).then(function () {
-        self.$router.push('/profile');
+        self.$router.push('/login');
       }).catch(function (error) {
         console.log(error, "you");
       })
@@ -54,8 +68,14 @@ export default {
 
 <style >
   .buttonform {
+    background: grey;
+
     border: solid 1px black!important;
   }
+  .buttonform:focus {
+    background: lightgrey;
+  }
+
 </style>
 <style scoped>
 

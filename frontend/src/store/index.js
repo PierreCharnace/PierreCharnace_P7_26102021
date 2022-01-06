@@ -24,7 +24,7 @@ export default new Vuex.Store({
       state.user = user;
     }
   },
-  actions: {
+  actions: { /**create account *****************/
     createAccount: ({commit}, userInfos) => { 
       return new Promise((resolve, reject) => {
         commit('setStatus',);
@@ -38,7 +38,7 @@ export default new Vuex.Store({
           reject(error);
         })
       })
-    },
+    },  /**Algo for login */
     login: ({commit}, userInfos) => {
       return new Promise((resolve, reject) => {
         commit;

@@ -16,7 +16,6 @@ module.exports = {
         const postId = req.params.id;
         // Params
         const content = req.body.content;
-        console.log("///////////////////////////////////////",userId);
         if (content == null) {
             return res.status(400).json({ 'error': 'missing parameters' });
         }
@@ -61,16 +60,9 @@ module.exports = {
     },
 
     listComments: function(req, res, next) {
-        //const fields = req.query.fields; // column when we need to display
-       // const limit = parseInt(req.query.limit);  //|get posts by segmentation ( 20 posts per leaf)
-       // const offset = parseInt(req.query.offset); //|
-      //  const order = req.query.order; // get posts by particular order
 
         Comment.findAll({
-       //   order: [(order != null) ? order.split(':') : ['content', 'ASC']],
-       //   attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
-      //    limit: (!isNaN(limit)) ? limit : null,
-        //  offset: (!isNaN(offset)) ? offset : null,
+
             include: [{
                 model: models.User,
                 attributes: [ 'lastName', 'firstName', 'profilePictures', 'isAdmin']
