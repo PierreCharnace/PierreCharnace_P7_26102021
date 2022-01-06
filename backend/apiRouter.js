@@ -4,7 +4,6 @@ const usersCtrl = require('./controllers/usersCtrl');
 const postsCtrl = require('./controllers/postsCtrl');
 const commentsCtrl = require('./controllers/commentsCtrl')
 const multer = require('./middleware/multer-config');
-const auth = require('./middleware/auth');
 
 
 

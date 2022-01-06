@@ -9,7 +9,7 @@
       <div class="row mt-1">
         <input v-model="password" id="password" type="password" class="col-5" placeholder="mode de passe">
       </div>
-      <b-button class="row buttonform mt-2 mb-2" > Connexion</b-button>
+      <b-button @click="login()" class="row buttonform mt-2 mb-2" > Connexion</b-button>
     </form>
   </div>
 </template>
@@ -26,7 +26,16 @@ export default {
   },
  
   methods: { 
- 
+    login: function () {
+      this.$store.dispatch('login', {
+        email: this.email,
+        password: this.password      
+      }).then( function (response) {
+        console.log(response);
+      }), (function (error) {
+        console.log(error);
+      })
+    }
   }
 }
 </script>

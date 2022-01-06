@@ -10,19 +10,50 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    status: '',
+    user: {
+      userId: -1,
+      token: '',
+    }
   },
   mutations: {
+    setStatus: function (state, status) {
+      state.status =  status;
+    },
+    logUser: function (state, user) {
+      state.user = user;
+    }
   },
   actions: {
     createAccount: ({commit}, userInfos) => { 
-       commit;
-       instance.post('/users/register', userInfos,)
-       .then(function (response) {
-         console.log(response, 'youhou');
-       })
-       .catch(function (error) {
-         console.log(error,"youhou");
-       })
+      return new Promise((resolve, reject) => {
+        commit('setStatus', 'loading');
+        instance.post('/users/register', userInfos)
+        .then(function (response) {
+          commit('setStatus', 'created');
+          resolve(response);
+        })
+        .catch(function (error) {
+          commit('setStatus', 'error_login');
+          reject(error);
+        })
+      })
+      
+    },
+    login: ({commit}, userInfos) => {
+      return new Promise((resolve, reject) => {
+        commit;
+        instance.post('/users/login', userInfos)
+        .then(function (response) {
+          commit('setStatus', 'logged');
+          commit('logUser', response.data);
+          resolve(response);
+        })
+        .catch(function (error) {
+          commit('setStatus', 'error_create');
+          reject(error);
+        })
+      })
     }
   },
   modules: {
