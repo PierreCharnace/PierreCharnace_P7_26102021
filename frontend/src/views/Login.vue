@@ -3,18 +3,24 @@
      <form class="container-fluid align-self-item">
       <h1 class="">Connexion</h1>
       <p>Vous n'avez pas encore de compte? <router-link class="createaccount" to="/register" >Créer un compte</router-link></p>
-      <div class="row mt-1">
-        <input v-model="email" id="email" type="email" class="col-5" placeholder="email">
+     <div class="row mt-1">
+        <input v-model="email" id="email" required type="email" class="col-5" placeholder="Adresse mail">
       </div>
       <div class="row mt-1">
-        <input v-model="password" id="password" type="password" class="col-5" placeholder="mode de passe">
+        <input v-model="password" required id="password" type="password" class="col-5" placeholder="mode de passe">
       </div>
-      <b-button @click="login()" class="row buttonform mt-2 mb-2" > Connexion</b-button>
+      <div class="row mt-1" v-if="status == 'error_login'"> Adresse mail et/ou mot de passe invalide</div>
+      <b-button @click="login()" class="row buttonform mt-2 mb-2" >
+        <span v-if="status == 'loading'">Connexion en cours...</span>
+        <span v-else> Connexion</span>
+      </b-button>
+      
     </form>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 
 export default {
   name: 'Login',
@@ -24,14 +30,19 @@ export default {
     password: ''
     }
   },
+
+  computed:{
+    ...mapState(["status"])
+  },
  
   methods: { 
     login: function () {
+      const self = this;
       this.$store.dispatch('login', {
         email: this.email,
         password: this.password      
-      }).then( function (response) {
-        console.log(response);
+      }).then( function () {
+        self.$router.push('/profile')
       }), (function (error) {
         console.log(error);
       })

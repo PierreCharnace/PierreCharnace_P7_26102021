@@ -36,14 +36,15 @@ export default {
   },
   methods: {
     createAccount: function () {
+      const self = this;
       this.$store.dispatch('createAccount', {
         email:      this.email,
         lastName:   this.lastName,
         firstName:  this.firstName,
         password:   this.password
-      }).then(function (response) {
-        console.log(response);
-      }), (function (error) {
+      }).then(function () {
+        self.$router.push('/profile');
+      }).catch(function (error) {
         console.log(error, "you");
       })
     },
