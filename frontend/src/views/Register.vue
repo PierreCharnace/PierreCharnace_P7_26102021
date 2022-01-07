@@ -5,20 +5,19 @@
       <h1 class="">Page d'enregistrement</h1>
       <p>Vous avez déjà un compte? <router-link class="createaccount" to="/login" >Connectez-vous</router-link></p>
       <div class="row mt-1">
-        <input pattern="[a-zA-Z.]{2,30}" title="Le nom doit être compris entre 2 et 30 caractères" v-model="lastName" type="text" id="lastname" required class="col-5 " placeholder="Nom">
+        <input v-model="lastName" type="text" id="lastname" required class="col-5 " placeholder="Nom">
       </div>
       <div class="row mt-1">
-        <input pattern="[a-zA-Z.]{2,20}" title="Le nom doit être compris entre 2 et 20 caractères" v-model="firstName" id="firstname" required type="text" class="col-5" placeholder="Prénom">
+        <input v-model="firstName" id="firstname" required type="text" class="col-5" placeholder="Prénom">
       </div>
       <div class="row mt-1">
-        <input pattern="[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+.[a-zA-Z.]{2,15}" v-model="email" id="email" required type="email" class="col-5" placeholder="Adresse mail">
+        <input  v-model="email" id="email" required type="email" class="col-5" placeholder="Adresse mail">
       </div>
       <div class="row mt-1">
-        <input pattern="[a-z0-9]{4,8}" title="Le mot de passe doit être compris entre 4 et 8 caractères minuscules et contenir au moins 1 chiffre" v-model="password" required="veuillez" id="password" type="password" class="col-5" placeholder="mot de passe">
+        <input v-model="password" id="password" type="password" class="col-5" placeholder="mot de passe">
       </div>
-      <button @click="createAccount()" class="buttonform mt-2 mb-2" >
-       <span v-if="validateFields == false"> Veuillez remplir les champs</span>
-       <span v-else >Créer mon compte</span> </button>
+      <span  class="row mt-1"> Adresse mail et/ou mot de passe invalide</span>
+       <button @click="createAccount()" class="buttonform mt-2 mb-2" type="button" >Créer mon compte</button>
     </form>
 </div>
 </template>
@@ -43,7 +42,7 @@ export default {
       } else {
         return false;
       }
-    }
+    },
   },
 
   methods: {
@@ -53,11 +52,12 @@ export default {
         email:      this.email,
         lastName:   this.lastName,
         firstName:  this.firstName,
-        password:   this.password
+        password:   this.password,
       }).then(function () {
-        self.$router.push('/login');
+          window.alert("ENREGISTREMENT RÉUSSI,Vous allez être redirigé vers la page de connexion")
+          self.$router.push('/login');
       }).catch(function (error) {
-        console.log(error, "you");
+          console.log(error);
       })
     },
   }
@@ -67,11 +67,16 @@ export default {
 <style >
   .buttonform {
     background: grey;
-
     border: solid 1px black!important;
+    border-radius: 8px;
   }
   .buttonform:focus {
-    background: lightgrey;
+    background: rgb(255, 215, 215);
+    border-radius: 8px;
+  }
+  .disabled-button {
+    cursor: not-allowed;
+    
   }
 
 </style>
@@ -79,6 +84,7 @@ export default {
 input {
   min-width: 300px;
   max-width: 500px;
+  border-radius: 8px;
 }
 
 form div {

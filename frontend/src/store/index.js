@@ -14,8 +14,10 @@ export default new Vuex.Store({
     user: {
       userId: -1,
       token: '',
-    }
-  },
+    },
+
+  },// mettre pattern pour register
+
   mutations: {
     setStatus: function (state, status) {
       state.status =  status;
@@ -53,7 +55,7 @@ export default new Vuex.Store({
           reject(error);
         })
       })
-    },
+    }
   },
   modules: {
   }
