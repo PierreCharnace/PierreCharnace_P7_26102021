@@ -9,11 +9,12 @@
       <div class="row mt-1">
         <input v-model="password" required id="password" type="password" class="col-5" placeholder="mot de passe">
       </div>
-      <span  class="row mt-1" v-if="status == 'error_login'"> Adresse mail et/ou mot de passe invalide</span>
-      <button @click="login()" class="buttonform mt-2 mb-2" type="button">
+      <span  class=" mt-1" v-if="status == 'error_login'"> Adresse mail et/ou mot de passe invalide</span>
+      <div>
+      <button @click="login()" class=" buttonform mt-2 mb-2 " type="button">
         Connexion
       </button>
-      
+      </div>
     </form>
   </div>
 </template>
@@ -65,5 +66,7 @@ form div {
   display: flex;
   justify-content: center;
 }
+
+
 </style>
 

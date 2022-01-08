@@ -6,6 +6,7 @@
       <p>Vous avez déjà un compte? <router-link class="createaccount" to="/login" >Connectez-vous</router-link></p>
       <div class="row mt-1">
         <input v-model="lastName" type="text" id="lastname" required class="col-5 " placeholder="Nom">
+      
       </div>
       <div class="row mt-1">
         <input v-model="firstName" id="firstname" required type="text" class="col-5" placeholder="Prénom">
@@ -14,10 +15,10 @@
         <input  v-model="email" id="email" required type="email" class="col-5" placeholder="Adresse mail">
       </div>
       <div class="row mt-1">
-        <input v-model="password" id="password" type="password" class="col-5" placeholder="mot de passe">
+        <input required v-model="password" id="password" type="password" class="col-5" placeholder="mot de passe">
       </div>
-      <span  class="row mt-1"> Adresse mail et/ou mot de passe invalide</span>
-       <button @click="createAccount()" class="buttonform mt-2 mb-2" type="button" >Créer mon compte</button>
+      <button v-if="validateFields== false" class="buttonform mt-2 mb-2 button--disabled" disabled>Veuillez remplir les champs</button>
+      <button v-else @click="createAccount()" class="buttonform mt-2 mb-2" type="button" >Créer mon compte</button>
     </form>
 </div>
 </template>
@@ -91,5 +92,8 @@ form div {
   display: flex;
   justify-content: center;
 }
+.button--disabled:hover {
+    cursor:not-allowed;
+  }
 </style>
   
