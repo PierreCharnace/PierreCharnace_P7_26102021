@@ -45,7 +45,7 @@ export default {
       }).then( function (response) {
         console.log(response);
         window.alert("CONNEXION RÉUSSI");
-        self.$router.push('/wall');
+        self.$router.push('/profile');
       }), (function (error) {
         console.log(error,"youhou");
       })

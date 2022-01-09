@@ -15,7 +15,11 @@ export default new Vuex.Store({
       userId: -1,
       token: '',
     },
-
+    userInfos: {
+      lastName: '',
+      firstName:'',
+      profilePicture:'',
+    }
   },// mettre pattern pour register
 
   mutations: {
@@ -23,8 +27,12 @@ export default new Vuex.Store({
       state.status =  status;
     },
     logUser: function (state, user) {
+      instance.defaults.headers.common['Autorization'] = user.token;
       state.user = user;
-    }
+    },
+    userInfos: function (state, userInfos) {
+      state.userInfos = userInfos;
+    },
   },
   actions: { /**create account *****************/
     createAccount: ({commit}, userInfos) => { 
@@ -55,6 +63,16 @@ export default new Vuex.Store({
           reject(error);
         })
       })
+    },
+    getUserInfos: ({commit}) => {
+      instance.post('/infos')
+        .then(function (response) {
+          commit('userInfos', response.data.infos);
+          commit('logUser', response.data);
+          resolve(response);
+        })
+        .catch(function () {
+        })
     }
   },
   modules: {
