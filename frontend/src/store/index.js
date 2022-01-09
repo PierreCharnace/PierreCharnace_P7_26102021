@@ -29,7 +29,7 @@ export default new Vuex.Store({
   actions: { /**create account *****************/
     createAccount: ({commit}, userInfos) => { 
       return new Promise((resolve, reject) => {
-        commit('setStatus',);
+        commit('setStatus', 'loading',);
         instance.post('/users/register', userInfos)
         .then(function (response) {
           commit('setStatus', 'created');
@@ -40,10 +40,10 @@ export default new Vuex.Store({
           reject(error);
         })
       })
-    },  /**Algo for login */
+    },  /**Algo for login ***************************/
     login: ({commit}, userInfos) => {
       return new Promise((resolve, reject) => {
-        commit;
+        commit('setStatus', 'loading');
         instance.post('/users/login', userInfos)
         .then(function (response) {
           commit('setStatus', 'loading');
