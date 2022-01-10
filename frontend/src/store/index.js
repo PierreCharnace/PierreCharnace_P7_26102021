@@ -65,7 +65,7 @@ export default new Vuex.Store({
       })
     },
     getUserInfos: ({commit}) => {
-      instance.post('/infos')
+      instance.get('/users/userProfile')
         .then(function (response) {
           commit('userInfos', response.data.infos);
           commit('logUser', response.data);

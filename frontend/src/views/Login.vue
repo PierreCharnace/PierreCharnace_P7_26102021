@@ -43,7 +43,7 @@ export default {
         email: this.email,
         password: this.password,      
       }).then( function (response) {
-        console.log(response);
+        console.log('*****',response);
         window.alert("CONNEXION RÉUSSI");
         self.$router.push('/profile');
       }), (function (error) {
