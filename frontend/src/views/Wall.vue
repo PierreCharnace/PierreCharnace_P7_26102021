@@ -2,7 +2,7 @@
 <div class="register">
     <div class="container register">
         <p>Page du mur et ajout de post</p>
-        <a href="#id01">Écrivez votre message</a>
+        <a href="#id01" ><button class="btn-access">Écrivez votre message</button></a>
 
         <div id="id01" class="modal">
         <div class="modal-dialog">
@@ -27,8 +27,22 @@
 
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
     name: 'Wall',
+    mounted:function () {
+        console.log(this.$store.state.user);
+        if (this.$store.state.user.userId == -1) {
+            this.$router.push('/');
+            return ;
+        }
+        this.$store.dispatch('getUserInfos');
+    },
+
+     computed:{
+    ...mapState(["userInfos"])
+  },
 }
 </script>
 <style scoped lang="scss">
@@ -40,6 +54,12 @@ export default {
 }
 $groupBorder :rgb(186, 77, 85);
 $bgmain :rgb(44, 62, 93) ;
+
+.btn-access {
+    border-radius: 8px;
+    background-color: $groupBorder;
+}
+
 /* Foncer l'arrière-plan de la fenêtre modale */
 .modal {
   display: none; 
