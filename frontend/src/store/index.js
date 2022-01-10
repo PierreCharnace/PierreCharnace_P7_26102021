@@ -5,9 +5,16 @@ import axios from 'axios'
 const instance = axios.create ({
   baseURL: 'http://localhost:3000/api/'
 });
+let user = localStorage.getItem('user');
+if (!user) {
+  user = {
+    userId: -1,
+    token: '',
+  };
+}
 
 Vue.use(Vuex)
-
+//create a new store instance
 export default new Vuex.Store({
   state: {
     status: '',
@@ -18,6 +25,7 @@ export default new Vuex.Store({
     userInfos: {
       lastName: '',
       firstName:'',
+      email: '',
       profilePicture:'',
     }
   },// mettre pattern pour register
@@ -27,7 +35,8 @@ export default new Vuex.Store({
       state.status =  status;
     },
     logUser: function (state, user) {
-      instance.defaults.headers.common['Autorization'] = user.token;
+      instance.defaults.headers.common['Authorization'] = ('Bearer', user.token);
+      localStorage.setItem('user', user)
       state.user = user;
     },
     userInfos: function (state, userInfos) {
@@ -67,8 +76,7 @@ export default new Vuex.Store({
     getUserInfos: ({commit}) => {
       instance.get('/users/userProfile')
         .then(function (response) {
-          commit('userInfos', response.data.infos);
-          commit('logUser', response.data);
+          commit('userInfos', response.data.userProfile);
           resolve(response);
         })
         .catch(function () {
