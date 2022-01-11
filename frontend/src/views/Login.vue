@@ -38,12 +38,16 @@ export default {
   methods: { 
     login: function () {
       const self = this;
+       console.log(this.email);   
       this.$store.dispatch('login', {
         email: this.email,
-        password: this.password,      
+        password: this.password,
+          
       }).then( function (response) {
-
+        localStorage.setItem('emailLocal', JSON.stringify(self.email));
+        window.alert("CONNEXION RÉUSSI");
         self.$router.push('/profile');
+        
       }), (function (error) {
 
       })

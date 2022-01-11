@@ -5,6 +5,7 @@ import axios from 'axios'
 const instance = axios.create ({
   baseURL: 'http://localhost:3000/api/'
 });
+let emailLocal = JSON.parse(localStorage.getItem('emailLocal'));
 let user = localStorage.getItem('user');
 if (!user) {
   user = {
@@ -27,6 +28,7 @@ if (!user) {
 Vue.use(Vuex)
 //create a new store instance
 export default new Vuex.Store({
+  
   state: {
     status: '',
     user: {
@@ -37,7 +39,7 @@ export default new Vuex.Store({
       lastName: '',
       firstName:'',
       email: '',
-      profilePicture:'',
+      profilePictures:'',
       deletedAt:'',
       isModo: false,
       isAdmin: false,
@@ -65,10 +67,10 @@ export default new Vuex.Store({
       instance.defaults.headers.common['Authorization'] = user.token;
       localStorage.setItem('user', JSON.stringify(user))//save user
       state.user = user;
-    },/*
+    },
     userInfos: function (state, userInfos) {
       state.userInfos = userInfos;
-    },*/
+    },
     logout: function (state) {
       state.user = {
         userId: -1,
@@ -99,6 +101,7 @@ export default new Vuex.Store({
         .then(function (response) {
           commit('setStatus', 'loading');
           commit('logUser', response.data);
+          commit(localStorage.setItem('emailLocal', JSON.stringify(this.email)));
           resolve(response);
         })
         .catch(function (error) {

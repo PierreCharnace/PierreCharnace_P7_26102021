@@ -1,8 +1,7 @@
 <template>
 <div class="container-fluid text-center register">
  <p>Page de profile</p> 
- <img :src="user.profilePicture" alt="image de profile">
- <i class="fas fa-user-circle"></i>
+ <img :src="user.profilePictures" alt="image de profile" class="picture">
  <p>{{ user.lastName }}</p>
  <p> {{ user.firstName }} </p>
  <p> {{ user.email }} </p>
@@ -18,7 +17,7 @@ import { mapState } from 'vuex'
 export default {
     name: 'Profile',
     mounted:function () {
-        if (this.$store.state.user.userId == -1) {
+        if (this.$store.state.user.token == '') {
             this.$router.push('/login');
             return ;
         } 
@@ -32,3 +31,10 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.picture {
+    width: 100px;
+    height: 100px;
+}
+</style>

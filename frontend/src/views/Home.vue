@@ -5,26 +5,14 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+
 
 export default {
   name: 'Home',
   
-
-  mounted: function () {
-    if (this.$store.user.userId == -1) {
-        this.$store.commit('logout');
-        this.$router.push('/')
-        return ;
-      }
-  },
-
-   computed:{
-    ...mapState(["user"]),
-  },
-
-
 }
+
+
 
 </script>
 
