@@ -24,6 +24,7 @@ export default {
 $bgcolor : rgb(174, 174, 174);
 $groupBorder : solid 5px rgb(186, 77, 85);
 $bgmain :rgb(44, 62, 93) ;
+$colorgroup: rgb(186, 77, 85);
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -52,5 +53,17 @@ footer {
   border-top: $groupBorder;
 }
 
+ .buttonform {
+    background: grey;
+    border: solid 1px black!important;
+    border-radius: 8px;
+  }
+  .buttonform:focus {
+    background: rgb(255, 215, 215);
+    border-radius: 8px;
+  }
+  .disabled-button {
+    cursor: not-allowed;
+  }
 
 </style>

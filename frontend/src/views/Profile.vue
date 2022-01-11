@@ -1,7 +1,11 @@
 <template>
 <div class="container-fluid text-center register">
  <p>Page de profile</p> 
- <div>youhou</div>
+ <img :src="user.profilePicture" alt="image de profile">
+ <p>{{ user.lastName }}</p>
+ <p> {{ user.firstName }} </p>
+ <p> {{ user.email }} </p>
+
 </div>
 </template>
 
@@ -9,21 +13,21 @@
 <script>
 import { mapState } from 'vuex'
 
-
-
 export default {
     name: 'Profile',
     mounted:function () {
         console.log(this.$store.state.user);
         if (this.$store.state.user.userId == -1) {
-            this.$router.push('/');
+            this.$router.push('/login');
             return ;
-        }
-        this.$store.dispatch('getUserInfos');
+        } 
+            this.$store.dispatch('getUserInfos');
     },
 
      computed:{
-    ...mapState(["userInfos"])
+    ...mapState({
+        user: 'userInfos'
+    })
   },
 }
 </script>

@@ -15,7 +15,8 @@
                 <textarea placeholder="Écrivez votre message"></textarea>  
             </div>
             <div class="container end">
-                <button class="end_btn">Insérer une image</button>
+                <button name="end_btn" class="end_btn">Insérer une image</button>
+                <!--<label for="end_btn"> {{ post.attachment }} </label>-->
                 <button class="end_btn">Publier</button>
             </div>
             </div>
@@ -34,7 +35,7 @@ export default {
     mounted:function () {
         console.log(this.$store.state.user);
         if (this.$store.state.user.userId == -1) {
-            this.$router.push('/');
+            this.$router.push('/login');
             return ;
         }
         this.$store.dispatch('getUserInfos');
@@ -133,6 +134,8 @@ textarea {
 }
 
 .end {
+  display: flex;
+  justify-content:space-between;
   background-color: $bgmain;
   font-size: 20px;
   color: white;

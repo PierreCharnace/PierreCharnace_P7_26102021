@@ -69,19 +69,7 @@ export default {
 </script>
 
 <style >
-  .buttonform {
-    background: grey;
-    border: solid 1px black!important;
-    border-radius: 8px;
-  }
-  .buttonform:focus {
-    background: rgb(255, 215, 215);
-    border-radius: 8px;
-  }
-  .disabled-button {
-    cursor: not-allowed;
-    
-  }
+ 
 
 </style>
 <style scoped>

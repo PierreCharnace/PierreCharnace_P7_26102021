@@ -5,7 +5,26 @@
 </template>
 
 <script>
-// @ is an alias to /src
+import { mapState } from 'vuex';
+
+export default {
+  name: 'Home',
+  
+
+  mounted: function () {
+    if (this.$store.user.userId == -1) {
+        this.$store.commit('logout');
+        this.$router.push('/')
+        return ;
+      }
+  },
+
+   computed:{
+    ...mapState(["user"]),
+  },
+
+
+}
 
 </script>
 
@@ -17,7 +36,7 @@
 
 @media ( min-width: 1440px) {
   .home {
-    height: 500px;
+    height: 1500px;
   }  
 }
 

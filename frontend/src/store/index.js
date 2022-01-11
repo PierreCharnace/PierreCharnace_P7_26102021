@@ -11,6 +11,17 @@ if (!user) {
     userId: -1,
     token: '',
   };
+}else {
+  try {
+      user = JSON.parse(user);
+      instance.defaults.headers.common['Authorization'] = ('Bearer', user.token);
+  } catch (ex) {
+    user = {
+      userId: -1,
+      token: '',
+    }
+  }
+
 }
 
 Vue.use(Vuex)
@@ -21,12 +32,28 @@ export default new Vuex.Store({
     user: {
       userId: -1,
       token: '',
-    },
+    },// For profile view//////////////////
     userInfos: {
       lastName: '',
       firstName:'',
       email: '',
       profilePicture:'',
+      deletedAt:'',
+      isModo: false,
+      isAdmin: false,
+    },
+    post: {
+      title: '',
+      content: '',
+      attachment: '',
+      createdAt:'',
+      updatedAt:'',
+      deletedAt:'',
+    },
+    Comment: {
+      content: '',
+      userId:'',
+      postId:'',
     }
   },// mettre pattern pour register
 
@@ -36,12 +63,19 @@ export default new Vuex.Store({
     },
     logUser: function (state, user) {
       instance.defaults.headers.common['Authorization'] = ('Bearer', user.token);
-      localStorage.setItem('user', user)
+      localStorage.setItem('user', JSON.stringify(user))//save user
       state.user = user;
     },
     userInfos: function (state, userInfos) {
       state.userInfos = userInfos;
     },
+    logout: function (state) {
+      state.user = {
+        userId: -1,
+        token: '',
+      }
+      localStorage.removeItem('user')
+    }
   },
   actions: { /**create account *****************/
     createAccount: ({commit}, userInfos) => { 
@@ -76,12 +110,13 @@ export default new Vuex.Store({
     getUserInfos: ({commit}) => {
       instance.get('/users/userProfile')
         .then(function (response) {
-          commit('userInfos', response.data.userProfile);
+          commit('userInfos', response.data);
+          console.log(response.data);
           resolve(response);
         })
         .catch(function () {
         })
-    }
+    },
   },
   modules: {
   }
