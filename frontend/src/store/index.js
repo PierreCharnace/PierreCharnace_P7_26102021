@@ -14,7 +14,7 @@ if (!user) {
 }else {
   try {
       user = JSON.parse(user);
-      instance.defaults.headers.common['Authorization'] = ('Bearer', user.token);
+      instance.defaults.headers.common['Authorization'] = user.token;
   } catch (ex) {
     user = {
       userId: -1,
@@ -62,13 +62,13 @@ export default new Vuex.Store({
       state.status =  status;
     },
     logUser: function (state, user) {
-      instance.defaults.headers.common['Authorization'] = ('Bearer', user.token);
+      instance.defaults.headers.common['Authorization'] = user.token;
       localStorage.setItem('user', JSON.stringify(user))//save user
       state.user = user;
-    },
+    },/*
     userInfos: function (state, userInfos) {
       state.userInfos = userInfos;
-    },
+    },*/
     logout: function (state) {
       state.user = {
         userId: -1,

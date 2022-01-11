@@ -42,10 +42,10 @@ export default {
         email: this.email,
         password: this.password,      
       }).then( function (response) {
-        window.alert("CONNEXION RÉUSSI");
+
         self.$router.push('/profile');
       }), (function (error) {
-        console.log(error,"youhou");
+
       })
     },
   },

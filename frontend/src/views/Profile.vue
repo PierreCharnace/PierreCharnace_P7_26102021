@@ -2,9 +2,11 @@
 <div class="container-fluid text-center register">
  <p>Page de profile</p> 
  <img :src="user.profilePicture" alt="image de profile">
+ <i class="fas fa-user-circle"></i>
  <p>{{ user.lastName }}</p>
  <p> {{ user.firstName }} </p>
  <p> {{ user.email }} </p>
+
 
 </div>
 </template>
@@ -16,7 +18,6 @@ import { mapState } from 'vuex'
 export default {
     name: 'Profile',
     mounted:function () {
-        console.log(this.$store.state.user);
         if (this.$store.state.user.userId == -1) {
             this.$router.push('/login');
             return ;

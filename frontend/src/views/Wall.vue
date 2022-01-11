@@ -146,4 +146,16 @@ textarea {
     border-radius: 8px;
     background-color: $groupBorder;
 }
+
+@media ( min-width: 320px) and ( max-width: 425px) {
+  .end_btn {
+    width: 80px;
+    height: 50px;
+    font-size: 0.8rem;
+  }
+  .modal-dialog .modal-content {
+    width: 95%;
+}
+}
+
 </style>
