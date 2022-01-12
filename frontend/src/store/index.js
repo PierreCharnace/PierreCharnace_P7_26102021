@@ -5,14 +5,14 @@ import axios from 'axios'
 const instance = axios.create ({
   baseURL: 'http://localhost:3000/api/'
 });
-let emailLocal = JSON.parse(localStorage.getItem('emailLocal'));
+
 let user = localStorage.getItem('user');
 if (!user) {
   user = {
     userId: -1,
     token: '',
   };
-}else {
+} else {
   try {
       user = JSON.parse(user);
       instance.defaults.headers.common['Authorization'] = user.token;
@@ -20,7 +20,7 @@ if (!user) {
     user = {
       userId: -1,
       token: '',
-    }
+    };
   }
 
 }
@@ -31,10 +31,7 @@ export default new Vuex.Store({
   
   state: {
     status: '',
-    user: {
-      userId: -1,
-      token: '',
-    },// For profile view//////////////////
+    user,// For profile view//////////////////
     userInfos: {
       lastName: '',
       firstName:'',
@@ -65,7 +62,7 @@ export default new Vuex.Store({
     },
     logUser: function (state, user) {
       instance.defaults.headers.common['Authorization'] = user.token;
-      localStorage.setItem('user', JSON.stringify(user))//save user
+      localStorage.setItem('user', JSON.stringify(user))//save user in localStorage
       state.user = user;
     },
     userInfos: function (state, userInfos) {
@@ -76,13 +73,31 @@ export default new Vuex.Store({
         userId: -1,
         token: '',
       }
-      localStorage.removeItem('user')
-    }
+      localStorage.removeItem('user');
+      localStorage.removeItem('emailLocal');
+    },
+  
   },
-  actions: { /**create account *****************/
-    createAccount: ({commit}, userInfos) => { 
+  actions: { /**Algo for login ***************************/
+    login: ({commit}, userInfos) => {
+      commit('setStatus', 'loading');
       return new Promise((resolve, reject) => {
-        commit('setStatus', 'loading',);
+        instance.post('/users/login', userInfos)
+        .then(function (response) {
+          commit('setStatus', '');
+          commit('logUser', response.data);
+          resolve(response);
+        })
+        .catch(function (error) {
+          commit('setStatus', 'error_login');
+          reject(error);
+        })
+      })
+    },/**create account *****************/
+    createAccount: ({commit}, userInfos) => { 
+      commit('setStatus', 'loading');
+      return new Promise((resolve, reject) => {
+        commit;
         instance.post('/users/register', userInfos)
         .then(function (response) {
           commit('setStatus', 'created');
@@ -93,33 +108,25 @@ export default new Vuex.Store({
           reject(error);
         })
       })
-    },  /**Algo for login ***************************/
-    login: ({commit}, userInfos) => {
-      return new Promise((resolve, reject) => {
-        commit('setStatus', 'loading');
-        instance.post('/users/login', userInfos)
-        .then(function (response) {
-          commit('setStatus', 'loading');
-          commit('logUser', response.data);
-          commit(localStorage.setItem('emailLocal', JSON.stringify(this.email)));
-          resolve(response);
-        })
-        .catch(function (error) {
-          commit('setStatus', 'error_login');
-          reject(error);
-        })
-      })
-    },
+    },  
     getUserInfos: ({commit}) => {
       instance.get('/users/userProfile')
         .then(function (response) {
           commit('userInfos', response.data);
-          console.log(response.data);
-          resolve(response);
         })
-        .catch(function () {
+        .catch(function (err) {
+          reject(err)
         })
     },
+    updateProfile: ({commit}) => {
+      instance.put('/users/userProfile')
+      .then(function (response) {
+        commit('userInfos', response.data);
+      })
+      .catch(function (err) {
+        reject(err)
+      })
+    }
   },
   modules: {
   }

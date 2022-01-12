@@ -38,7 +38,7 @@ export default {
   methods: { 
     login: function () {
       const self = this;
-       console.log(this.email);   
+
       this.$store.dispatch('login', {
         email: this.email,
         password: this.password,

@@ -4,7 +4,7 @@ const db = require("../models/index");
 const Comment = db.comment;
 const User = db.user;
 
-const jwtUtils = require('../middleware/jwt.utils')
+const jwtUtils = require('../utils/jwt.utils')
 const asyncLib = require('async');
 
 

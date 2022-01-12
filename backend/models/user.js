@@ -22,7 +22,10 @@ module.exports = (sequelize, DataTypes) => {
     password: DataTypes.STRING,
     profilePictures: DataTypes.STRING,
     isAdmin: DataTypes.BOOLEAN,
-    isModo: DataTypes.BOOLEAN
+    isModo: DataTypes.BOOLEAN,
+    deletedAt: DataTypes.BOOLEAN,
+    updatedAt: DataTypes.BOOLEAN,
+    createdAt: DataTypes.BOOLEAN,
   }, {
     sequelize,
     modelName: 'User',

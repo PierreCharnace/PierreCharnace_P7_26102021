@@ -5,8 +5,6 @@ const postsCtrl = require('./controllers/postsCtrl');
 const commentsCtrl = require('./controllers/commentsCtrl')
 const multer = require('./middleware/multer-config');
 
-
-
 //Router
 exports.router = (function() {
     const apiRouter = express.Router();
@@ -22,6 +20,7 @@ exports.router = (function() {
     //Posts routes
     apiRouter.post ('/posts/new', multer, postsCtrl.createPost);
     apiRouter.get  ('/posts/', postsCtrl.listPosts);
+    apiRouter.put ('/posts/update/:id', postsCtrl.updatePost);
     apiRouter.delete('/posts/delete/:id', postsCtrl.deleteOnePost);
 
     //Comments routes

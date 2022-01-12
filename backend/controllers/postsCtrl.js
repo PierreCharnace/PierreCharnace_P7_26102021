@@ -1,7 +1,7 @@
 //Imports
 const models = require('../models');
 const asyncLib = require('async');
-const jwtUtils = require('../middleware/jwt.utils')
+const jwtUtils = require('../utils/jwt.utils')
 const db = require("../models/index");
 const User = db.user;
 const Post = db.post;
@@ -75,7 +75,7 @@ module.exports = {
             limit: (!isNaN(limit)) ? limit : null,
             offset: (!isNaN(offset)) ? offset : null,
             include: [{
-                model: models.User,
+                model: User,
                 attributes: [ 'lastName', 'firstName', 'profilePictures','isAdmin']
             }]
         }).then(function(posts) {
@@ -141,39 +141,51 @@ module.exports = {
         ]);
     },
 
-    updatePost: (req, res) => {
-        //params
-    const postId = req.params.id;
-    const title = req.body.title;
-    const content = req.body.content;
-    const attachment = req.body.attachment;
-    
-    const userId      = jwtUtils.getUserId(headerAuth);
-
-         asyncLib.waterfall([
-            function(done) {              
-                models.Post.findOne({
-                    attributes: [ 'title', 'content', 'attachment' ],
-                    where: {id: postId}
-                    })
-                    .then(function (postToUpdate) {
-                        done(null, postToUpdate); 
+        updatePost: (req, res) => {
+            //params
+            const postId = req.params.id;
+            const title = req.body.title;
+            const content = req.body.content;
+            const attachment = req.body.attachment;
+            const headerAuth  = req.headers['authorization'];
+            const userId      = jwtUtils.getUserId(headerAuth);
+            
+            asyncLib.waterfall([
+               function(done) {
+                User.findOne({
+                        where: { id: userId }
+                    }).then(function(userFound) {
+                        done(null, userFound);
                     })
                     .catch(function(err) {
-                        return res.status(500).json({ 'error': 'unable to verify post' });
+                        return res.status(500).json({ 'error': 'unable to verify user' });
+                    });
+            },
+
+            // Get the targeted post infos
+            function(userFound, done) {
+                models.Post.findOne({
+                        where: { id: postId }
+                    })
+                    .then(function(postFound) {
+                        done(null, userFound, postFound);
+                    })
+                    .catch(function(err) {
+                        return res.status(500).json({ 'error': 'Post not found' });
                     });
             },/////////////////////////////////////////
-            function(postToUpdate, done) {
+            function(userFound, postToUpdate, done) {
               if(postToUpdate) {
-                postoUpdate.update({
+                postToUpdate.update({
                   title: (title ? title : postToUpdate.title),
                   content: (content ? content : postToUpdate.content),  
                   birthday: (attachment ? attachment : postToUpdate.attachment),// verify if title, content, attachment is valid in req, if ok, 
                  
                 }).then(function() {
                   done(postToUpdate); // when is update, return userFound, the waterfall is done
-                }).catch(function(err) {
-                  res.status(500).json({ 'error': 'cannot update post' });
+                }).catch(function(err) {console.log(postToUpdate);
+                  res.status(500).json({ 'error': `cannot update post` });
+
               });
           } else {
             res.status(404).json({ 'error': 'post not found' });

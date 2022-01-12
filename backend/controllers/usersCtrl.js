@@ -1,6 +1,6 @@
 //imports
 const bcrypt = require('bcryptjs');
-const jwtUtils = require('../middleware/jwt.utils');
+const jwtUtils = require('../utils/jwt.utils');
 
 const db = require("../models/index");
 const User = db.user;
@@ -21,6 +21,7 @@ module.exports = {
         const password = req.body.password;
         const profilePictures = "https://pic.onlinewebfonts.com/svg/img_24787.png";
 
+
         if (email == null || lastName == null || firstName == null || password == null) {
             return res.status(400).json({ 'error': 'paramètres manquants' });
         }
@@ -34,7 +35,7 @@ module.exports = {
             return res.status(400).json({ 'error': 'email non valide' })
         }
         if (!PASSWORD_REGEX.test(password)) {
-            return res.status(400).json({ 'error': 'mot de passe non valide il doit être compris entre 4 et 8 caractères et contenir au moins 1 nombre'})
+            return res.status(400).json({ 'error': 'mot de passe non valide il doit être compris entre 4 et 8 caractères et contenir au moins 1 chiffre'})
         }
 
         asyncLib.waterfall([
@@ -60,32 +61,32 @@ module.exports = {
                   return res.status(409).json({ 'error': 'user already exist' });
                 }
             }, // Create User in DB
-        function(userFound, bcryptedPassword, done) {
-                let newUser = User.create({
-                    email     : encryptEmail,
-                    lastName  : lastName,
-                    firstName : firstName,                       
-                    password  : bcryptedPassword,
-                    profilePictures : profilePictures,
-                    isAdmin : 0,
-                    isModo : 0
-                })
-                .then(function(newUser) {
-                    done(newUser);
-                })
-                .catch(function(err) {console.log('-->',);
-                    return res.status(500).json({ 'error': 'unable add user'});
-                });
-            }// after creat return new userId
-        ], function (newUser) {
-            if (newUser) {
-                return res.status(201).json({
-                    'userId': newUser.id
-                });
-            } else {
-                return res.status(500).json({ 'error': 'cannot add user' })
-            }
-        });
+            function(userFound, bcryptedPassword, done) {
+                  let newUser = User.create({
+                      email     : encryptEmail,
+                      lastName  : lastName,
+                      firstName : firstName,                       
+                      password  : bcryptedPassword,
+                      profilePictures : profilePictures,
+                      isAdmin : 0,
+                      isModo : 0
+                  })
+                  .then(function(newUser) {
+                      done(newUser);
+                  })
+                  .catch(function(err) {console.log('-->',);
+                      return res.status(500).json({ 'error': 'unable add user'});
+                  });
+              }// after creat return new userId
+          ], function (newUser) {
+              if (newUser) {
+                  return res.status(201).json({
+                      'userId': newUser.id
+                  });
+              } else {
+                  return res.status(500).json({ 'error': 'cannot add user' })
+              }
+              });
 
     },
     login: function(req, res) {
@@ -127,7 +128,7 @@ module.exports = {
       }
     ], function(userFound) {
       if (userFound) {
-        return res.status(201).json({
+        return res.status(200).json({
           'userId': userFound.id,
           'token': jwtUtils.generateTokenForUser(userFound)
         });
@@ -182,19 +183,19 @@ module.exports = {
 },
 
   getUserProfile: function(req, res) {
-    const headerAuth  = req.headers['authorization'];
+    const headerAuth  = req.headers.authorization;
     const userId      = jwtUtils.getUserId(headerAuth);
-
+    
     if (userId < 0)
       return res.status(400).json({ 'error': 'wrong token' });
 
     User.findOne({
-      attributes: [ 'id', 'lastName', 'firstName', 'email', 'profilePictures' ],
+      attributes:  ['id', 'lastName','email', 'firstName', 'deletedAt', 'profilePictures','isModo','isAdmin'],
       where: { id: userId}
     })
     .then(function(user) {
       if (user) {
-        res.status(201).json(user);
+        res.status(200).json(user);
       } else {
         res.status(404).json({ 'error': 'user not found' });
       }
@@ -208,7 +209,6 @@ module.exports = {
     const userId      = jwtUtils.getUserId(headerAuth);
     const lastName = req.body.lastName;
     const firstName = req.body.firstName;
-    const birthday = req.body.birthday;
     const profilePictures = req.body.profilePictures;
 
     asyncLib.waterfall([
@@ -227,8 +227,7 @@ module.exports = {
         if(userFound) {
           userFound.update({    
             lastName: (lastName ? lastName : userFound.lastName),
-            firstName: (firstName ? firstName : userFound.firstName),
-            birthday: (birthday ? birthday : userFound.birthday),                           // verify if birthday and profilePictures is valid in req, if ok, 
+            firstName: (firstName ? firstName : userFound.firstName),                         // verify if birthday and profilePictures is valid in req, if ok, 
             profilePictures: (profilePictures ? profilePictures : userFound.profilePictures) // substitute or if same thing I let them
           }).then(function() {
               done(userFound); // when is update, return userFound, the waterfall is done
