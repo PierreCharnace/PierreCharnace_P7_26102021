@@ -40,7 +40,7 @@ export default {
     },
     mounted:function () {
         if (this.$store.state.user.token == '') {
-            this.$router.push('/login');
+            this.$router.push('/login').catch(()=>{});
             return ;
         } 
             this.$store.dispatch('getUserInfos');

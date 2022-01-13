@@ -2,7 +2,7 @@
     <nav  id="nav" class="container-fluid navbar">    
         <router-link to="/" class="col-12 col-md-5 col-sm-8"><img src="@/assets/img-header-grey.png" alt="logo groupomania" class="col-10">  </router-link>
         <div class="col-12 col-sm-4 align-self-center">
-          <div class="container " v-if="user.token == ''">
+          <div class="container " v-if="user.token==''">
             <router-link  to="/register" >S'enregistrer</router-link> |
             <router-link  to="/login" >S'identifier</router-link>
           </div>           
@@ -15,7 +15,7 @@
             </div>
               
             <div class="mt-3 btn_container">
-              <p>connecter en tant que {{ user.firstName }} </p>
+              <p>connecté en tant que {{ userInfos.firstName }} </p>
               <i class=" btn_disconnection fas fa-power-off" @click="logout"></i>
             </div>
            
@@ -35,17 +35,15 @@ export default {
   },
   
   computed:{
-    ...mapState({
-      user:'userInfos'
-    }),
+    ...mapState(["user", "userInfos"]),
   },
 
   methods: {
     logout: function () {
       if (confirm("Vous allez être déconnecté")) {
-      this.$store.commit('logout');
-      this.$router.push('/login')
-      return ;
+        this.$store.commit('logout');
+        this.$router.push("/login");
+        return ;
       }
     }
   }

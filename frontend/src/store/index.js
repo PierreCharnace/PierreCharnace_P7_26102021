@@ -53,7 +53,8 @@ export default new Vuex.Store({
       content: '',
       userId:'',
       postId:'',
-    }
+    },
+    
   },// mettre pattern pour register
 
   mutations: {
@@ -75,6 +76,19 @@ export default new Vuex.Store({
       }
       localStorage.removeItem('user');
       localStorage.removeItem('emailLocal');
+
+    },/*
+    updateUser: function (state, userInfos) {
+
+    }*/
+    regLastName: function () {
+      let regexNames = RegExp(/(.*[a-zA-Z-]){2,30}/);
+      if (regexNames.test(this.lastName)) {
+        window.alert('youhou')
+      } else {
+        window.alert('youhou')
+        return
+      }
     },
   
   },
@@ -84,7 +98,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         instance.post('/users/login', userInfos)
         .then(function (response) {
-          commit('setStatus', '');
+          commit('setStatus', 'regLastName');
           commit('logUser', response.data);
           resolve(response);
         })
@@ -115,18 +129,19 @@ export default new Vuex.Store({
           commit('userInfos', response.data);
         })
         .catch(function (err) {
+          commit('setStatus');
           reject(err)
         })
-    },
+    },/*
     updateProfile: ({commit}) => {
       instance.put('/users/userProfile')
-      .then(function (response) {
-        commit('userInfos', response.data);
+      .then(function (request) {
+        commit('userInfos', request.data);
       })
       .catch(function (err) {
         reject(err)
       })
-    }
+    }*/
   },
   modules: {
   }
