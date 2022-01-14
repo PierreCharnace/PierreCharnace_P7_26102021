@@ -77,20 +77,11 @@ export default new Vuex.Store({
       localStorage.removeItem('user');
       localStorage.removeItem('emailLocal');
 
-    },/*
-    updateUser: function (state, userInfos) {
+    },
+    user: function(state, user) {
+      state.user = user
+    }
 
-    }*//*
-    regLastName: function () {
-      let regexNames = RegExp(/(.*[a-zA-Z-]){2,30}/);
-      if (regexNames.test(this.lastName)) {
-        window.alert('youhou')
-      } else {
-        window.alert('youhou')
-        return
-      }
-    },*/
-  
   },
   actions: { /**Algo for login ***************************/
     login: ({commit}, userInfos) => {
@@ -132,16 +123,18 @@ export default new Vuex.Store({
           commit('setStatus');
           reject(err)
         })
-    },/*
-    updateProfile: ({commit}) => {
-      instance.put('/users/userProfile')
+    },
+    updateProfile: ({commit, user}) => {
+      commit;
+      console.log(user);
+     /* instance.put('/users/userProfile')
       .then(function (request) {
         commit('userInfos', request.data);
       })
       .catch(function (err) {
         reject(err)
-      })
-    }*/
+      })*/
+    }
   },
   modules: {
   }

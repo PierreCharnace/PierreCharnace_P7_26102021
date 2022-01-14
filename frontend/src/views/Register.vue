@@ -29,7 +29,6 @@
 </div>
 </template>
 
-
 <script>
 import { mapState } from 'vuex'
 
@@ -44,6 +43,7 @@ export default {
     regLast : '',
     }
   },
+  
   computed : {
     validateFields: function () {
       if (this.lastName !="" && this.firstName !="" && this.email != "" && this.password != "") {
@@ -53,14 +53,6 @@ export default {
       }
     },
     ...mapState(["status","regLastName"]),
-     /*   regLastName: function () {
-      let regexNames = RegExp(/(.*[a-zA-Z-]){2,30}/);
-      if (regexNames.test(this.lastName)) {
-        return true;
-      } else {
-        return false;
-      }
-    },*/
   },
 
   methods: {
@@ -74,42 +66,61 @@ export default {
     createAccount: function () {
       const self = this;
         let regexEmail = RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/).test(this.email);
-        let regexPassword = RegExp(/^(?=.*\d).{4,8}$/).test(this.password);
-        let regexLastName = RegExp(/(.*[a-zA-Z-]){2,30}/).test(this.lastName);
-        let regexFirstName = RegExp(/(.*[a-zA-Z-]){2,30}/).test(this.firstName);
-       
-        if (regexLastName == true) {
-          return true;
-        } else {
-          lastnamep.innerHTML ='Nom non comformes il doit être compris entre 2 et 30 caractères';
-        }
-         if (regexFirstName == true) {
-          return true;
-        } else {
-          firstnamep.innerHTML ='Prénom non comformes il doit être compris entre 2 et 30 caractères';
-        }
-         if (regexEmail == true) {
-          return true;
-        } else {
-          emailp.innerHTML='email non valide';
-        }
-         if (regexPassword == true) {
-          return true;
-        } else {
-          mdp.innerHTML='mot de passe non valide il doit être compris entre 4 et 8 caractères et contenir au moins 1 chiffre';
-        }
-      this.$store.dispatch('createAccount', {
-        email:      this.email,
-        lastName:   this.lastName,
-        firstName:  this.firstName,
-        password:   this.password,
+        let regexPassword = RegExp(/(.*[a-zA-Z0-9]).{4,8}$/).test(this.password);
+        let mdpLength = this.password;
+        let lastName = this.lastName;
+        let firstName = this.firstName;
 
-      }).then(function () {
-          self.$router.push('/login');
-          window.alert("ENREGISTREMENT RÉUSSI,Vous allez être redirigé vers la page de connexion")
-      }).catch(function (error) {
-          console.log(error);
-      })
+        function testLastName() {
+          if ( `${lastName.length}`>=30 || `${lastName.length}`<=1 ) {
+            lastnamep.innerHTML ='Nom non comformes il doit être compris entre 2 et 30 caractères';
+          } else {
+            lastnamep.innerHTML = '';
+          };
+        }testLastName()
+
+        function testFirstName() {
+          if ( `${firstName.length}`>=30 || `${firstName.length}`<=1) {
+           firstnamep.innerHTML ='Prénom non comformes il doit être compris entre 2 et 30 caractères';
+          } else {
+             firstnamep.innerHTML = '';
+          };
+        }testFirstName()
+        
+        function testEmail() {
+          if ( regexEmail == true) {
+            emailp.innerHTML = '';
+          } else {
+            emailp.innerHTML ='email non valide';
+          };
+        }testEmail()
+
+        function testMdp() {
+          if ( (regexPassword == false )|| (`${mdpLength.length}`>8 || `${mdpLength.length}`<=3)) {
+            mdp.innerHTML ='mot de passe non valide il doit être compris entre 4 et 8 caractères et contenir au moins 1 chiffre';
+          } else {
+            mdp.innerHTML = '';
+          };
+        }testMdp()
+          
+          this.$store.dispatch('createAccount', {
+            email:      this.email,
+            lastName:   this.lastName,
+            firstName:  this.firstName,
+            password:   this.password,
+
+          }).then(function () {
+            self.$router.push('/login');
+            window.alert("ENREGISTREMENT RÉUSSI,Vous allez être redirigé vers la page de connexion")
+          }).catch(function (error) {      
+            if (error == `Error: Request failed with status code 409`) {
+                      emailp.innerHTML = 'Adresse mail déjà utilisée';
+
+             } else {
+            emailp.innerHTML = ''
+            }
+          })
+       
     },
   }
 }
