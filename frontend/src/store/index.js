@@ -80,7 +80,7 @@ export default new Vuex.Store({
     },/*
     updateUser: function (state, userInfos) {
 
-    }*/
+    }*//*
     regLastName: function () {
       let regexNames = RegExp(/(.*[a-zA-Z-]){2,30}/);
       if (regexNames.test(this.lastName)) {
@@ -89,7 +89,7 @@ export default new Vuex.Store({
         window.alert('youhou')
         return
       }
-    },
+    },*/
   
   },
   actions: { /**Algo for login ***************************/

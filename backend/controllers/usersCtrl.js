@@ -28,8 +28,8 @@ module.exports = {
         if (lastName.length >= 30 || lastName.length <= 1) {
             return res.status(400).json({ 'error': 'Nom non comformes il doit être compris entre 2 et 30 caractères'});
         }
-        if (firstName.length >= 20 || firstName.length <= 1) {
-            return res.status(400).json({ 'error': 'Prénom non comformes il doit être compris entre 2 et 20 caractères'});
+        if (firstName.length >= 30 || firstName.length <= 1) {
+            return res.status(400).json({ 'error': 'Prénom non comformes il doit être compris entre 2 et 30 caractères'});
         }
         if (!EMAIL_REGEX.test(email)) {
             return res.status(400).json({ 'error': 'email non valide' })
@@ -57,7 +57,7 @@ module.exports = {
                   bcrypt.hash(password, 5, function( err, bcryptedPassword ) {
                     done(null, userFound, bcryptedPassword);
                   });
-                } else {
+                } else {// else throw an error if the email is already use
                   return res.status(409).json({ 'error': 'user already exist' });
                 }
             }, // Create User in DB
@@ -183,7 +183,7 @@ module.exports = {
 },
 
   getUserProfile: function(req, res) {
-    const headerAuth  = req.headers.authorization;
+    const headerAuth  = req.headers['authorization'];
     const userId      = jwtUtils.getUserId(headerAuth);
     
     if (userId < 0)

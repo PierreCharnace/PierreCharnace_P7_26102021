@@ -75,7 +75,7 @@ module.exports = {
             limit: (!isNaN(limit)) ? limit : null,
             offset: (!isNaN(offset)) ? offset : null,
             include: [{
-                model: User,
+                model: models.User,
                 attributes: [ 'lastName', 'firstName', 'profilePictures','isAdmin']
             }]
         }).then(function(posts) {
