@@ -15,9 +15,9 @@
                 <textarea placeholder="Écrivez votre message"></textarea>  
             </div>
             <div class="container end">
-                <button name="end_btn" class="end_btn">Insérer une image</button>
+                <input type="file" @change="onAttachmentSelected" name="end_btn" class="end_btn" />
                 <!--<label for="end_btn"> {{ post.attachment }} </label>-->
-                <button class="end_btn">Publier</button>
+                <button class="end_btn" @click="onUpload">Publier</button>
             </div>
             </div>
         </div>
@@ -29,11 +29,17 @@
 
 <script>
 import { mapState } from 'vuex'
+import axios from 'axios'
+import fs from 'fs'
 
 export default {
     name: 'Wall',
+    data: () => {
+      return {
+        attachment: null
+      }
+    },
     mounted:function () {
-        console.log(this.$store.state.user);
         if (this.$store.state.user.userId == -1) {
             this.$router.push('/login').catch((err)=>{err});
             return ;
@@ -43,7 +49,29 @@ export default {
 
      computed:{
     ...mapState(["userInfos"])
-  },
+    },
+    methods: {
+      onAttachmentSelected(e) {
+        this.attachment = e.target.files[0]
+      },
+      onUpload() {
+        let userToken = localStorage.getItem('user');
+        userToken = JSON.parse(userToken)
+        const fd = new FormData();
+        fd.append('images', this.attachment, this.attachment.name)
+        console.log(this.attachment);
+        axios.post("http://localhost:3000/api/posts/new", 
+        {fd},
+        {headers: {
+                  Authorization: "Bearer " + userToken.token
+        }})
+        
+        .then(res => {
+          console.log('---->',res)
+        }
+        )
+      }
+    }
 }
 </script>
 <style scoped lang="scss">
