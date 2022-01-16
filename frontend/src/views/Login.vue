@@ -49,7 +49,7 @@ export default {
         self.$router.push('/profile');
         
       }), (function (error) {
-
+        error
       })
     },
   },

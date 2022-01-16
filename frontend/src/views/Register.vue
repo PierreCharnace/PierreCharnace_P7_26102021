@@ -56,12 +56,6 @@ export default {
   },
 
   methods: {
-      regexRegister: function () {
- 
-        
-
-      },
-      
     
     createAccount: function () {
       const self = this;

@@ -11,7 +11,7 @@
                 <router-link to="/wall" class="col-12 justify-content-center">Mur de publication</router-link>
             </div>
             <div class="">
-              <router-link to="/profile" class="col-12 justify-content-center">Mon profile</router-link>
+              <router-link to="/profile" class="col-12 justify-content-center">Mon profil</router-link>
             </div>
               
             <div class="mt-3 btn_container">

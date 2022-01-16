@@ -77,11 +77,12 @@ export default new Vuex.Store({
       localStorage.removeItem('user');
       localStorage.removeItem('emailLocal');
 
-    },
+    },/*
     user: function(state, user) {
+      instance.defaults.headers.common['Authorization'] = user.token;
       state.user = user
-    }
-
+    },*/
+  
   },
   actions: { /**Algo for login ***************************/
     login: ({commit}, userInfos) => {
@@ -124,17 +125,19 @@ export default new Vuex.Store({
           reject(err)
         })
     },
-    updateProfile: ({commit, user}) => {
+   /* updateProfile: ({commit, user}) => {
       commit;
       console.log(user);
-     /* instance.put('/users/userProfile')
-      .then(function (request) {
-        commit('userInfos', request.data);
-      })
-      .catch(function (err) {
-        reject(err)
-      })*/
-    }
+      instance.put('/users/userProfile')
+        .then(function (request) {
+          commit('user',)
+          console.log('-->', user);
+   
+        })
+        .catch(function (err) {
+          reject(err)
+         })
+    }*/
   },
   modules: {
   }
