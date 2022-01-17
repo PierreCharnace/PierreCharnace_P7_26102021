@@ -5,23 +5,23 @@
         <a href="#id01" ><button class="btn-access">Écrivez votre message</button></a>
 
         <div id="id01" class="modal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            <header class="container"> 
-                <a href="#" class="closebtn">×</a>
-                <h5>Créer une publication</h5>
-            </header>
-            <div class="container">
-                <textarea placeholder="Écrivez votre message"></textarea>
-                <img :src="uploadUrl" alt="image de publication" fluid>  
-            </div>
-            <div class="container end">
-                <input type="file" @change="onAttachmentSelected" name="attachment" class="end_btn" />
-                <!--<label for="end_btn"> {{ post.attachment }} </label>-->
-                <button class="end_btn" @click="onUpload">Publier</button>
-            </div>
-            </div>
-        </div>
+          <div class="modal-dialog">
+              <form class="modal-content">
+                <header class="container"> 
+                    <a href="#" class="closebtn">×</a>
+                    <h5>Créer une publication</h5>
+                </header>
+                <div class="container">
+                    <textarea v-model="content" placeholder="Écrivez votre message"></textarea>
+                    <img :src="uploadUrl" alt="image de publication" fluid>  
+                </div>
+                <div class="container end">
+                    <input type="file" @change="onAttachmentSelected" name="attachment" class="end_btn" />
+                    <!--<label for="end_btn"> {{ post.attachment }} </label>-->
+                    <button type="button" class="end_btn" @click="onUpload">Publier</button>
+                </div>
+              </form>
+          </div>
         </div> 
     </div>
 </div>
@@ -37,9 +37,10 @@ export default {
     name: 'Wall',
     data: () => {
       return {
-        attachment: null,
+        selectedFile: '',
         uploadUrl:'',
-        userId: '',
+        UserId: '',
+        content:''
       }
     },
     mounted:function () {
@@ -54,28 +55,33 @@ export default {
     ...mapState(["userInfos"])
     },
     methods: {
-      onAttachmentSelected(e) {
-        this.attachment = e.target.files[0]
-        this.uploadUrl = URL.createObjectURL(this.attachment) // create an url to preview it before uploading
+      onAttachmentSelected(e) {console.log('yyyyyyyyyyyy',e);
+        this.selectedFile = e.target.files[0]
+        this.uploadUrl = URL.createObjectURL(this.selectedFile) // create an url to preview it before uploading
       },
       onUpload() {
         let userToken = localStorage.getItem('user');
         userToken = JSON.parse(userToken)
+
         const fd = new FormData();
-        fd.append('attachment', this.attachment, this.attachment.name)
+        fd.append('attachment',this.selectedFile, this.selectedFile.name)
         fd.append('content', this.content);
-       // console.log('--->',this.attachment.name);
-        console.log(fd.append);
-        axios.post("http://localhost:3000/api/posts/new", 
+        console.log('-->',fd.get('content',));
+        console.log('--***>',fd.get('attachment'));
+
+        axios.post("http://localhost:3000/api/posts/new",
+        
         fd,
+             
         {headers: {
                   Authorization: "Bearer " + userToken.token
         }})
         
         .then(res => {
           console.log('---->',res)
-        }
-        )
+        }).catch((err) => {
+             console.log(err);
+          })
       }
     }
 }
