@@ -1,0 +1,90 @@
+<template>
+<div class="register">
+    <div class="container register">
+        <p>Page du mur et ajout de post</p>
+        <a href="#id01" ><button class="btn-access">Écrivez votre message</button></a>
+
+        <form id="id01" class="modal" v-on:submit.prevent="newPost">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <header class="container"> 
+                <a href="#" class="closebtn">×</a>
+                <h5>Créer une publication</h5>
+            </header>
+            <div class="container">
+                <textarea v-model="content"  placeholder="Écrivez votre message"></textarea>
+                <b-img-lazy  :src="uploadUrl" fluid></b-img-lazy>  
+            </div>
+            <div class="container end">
+               <input class="end_btn" type="file" @change="onAttachmentSelected" name="end_btn"  />
+                <!--<label for="end_btn"> {{ post.attachment }} </label>-->
+                <button class="end_btn" type="submit">Publier</button>
+            </div>
+            </div>
+        </div>
+        </form>
+          
+          <p>youhou</p> 
+    </div>
+</div>
+</template>
+
+
+<script>
+import { mapState } from 'vuex'
+import axios from 'axios'
+import fs from 'fs'
+
+export default {
+    name: 'Wall',
+    data: () => {
+      return {
+        attachment: '',
+        content:'',
+        uploadUrl: '',
+        postId:''
+      }
+    },
+    mounted:function () {
+        if (this.$store.state.user.userId == -1) {
+            this.$router.push('/login').catch((err)=>{err});
+            return ;
+        }
+        this.$store.dispatch('getUserInfos');
+    },
+
+     computed:{
+    ...mapState(["userInfos"])
+    },
+    methods: {
+      onAttachmentSelected(e) {
+        this.attachment = e.target.files[0];                 //
+        this.uploadUrl = URL.createObjectURL(this.attachment)// preview pictures before publication
+      },
+      newPost:
+      function () {
+        let userPost = localStorage.getItem('user');
+        userPost = JSON.parse(userPost);
+        console.log(userPost.userId);
+        const fd = new FormData();
+        fd.append('attachment', this.attachment, this.attachment.name);
+        fd.append("content", this.content);
+        fd.append("userId", userPost.userId);
+
+       { axios.post("http://localhost:3000/api/posts/new/",
+          fd,
+          {
+            headers: {
+            Authorization: "Bearer " + userPost.token
+            //"Content-Type": "multipart/form-data",
+            }
+          }).then(res => {
+              console.log('---->',res)
+          })
+        }
+      }
+    }
+}
+</script>
+<style scoped lang="scss">
+

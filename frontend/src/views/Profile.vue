@@ -73,17 +73,17 @@ export default {
         updateProfile: 
             function () {
                 let userToken = localStorage.getItem('user');
-                const self = this;
+                //const self = this;
                 userToken = JSON.parse(userToken)
-                const fd = new FormData();
-                fd.append('image', this.profilePictures, this.profilePictures.name)
-                console.log('**********',fd[2]);
+           //     const fd = new FormData();
+              //  fd.append('image', this.profilePictures, this.profilePictures.name)
+               // console.log('**********',fd[2]);
                 {  axios.put("http://localhost:3000/api/users/userProfile", {
                         
                         lastName : this.user.lastName,
                         firstName: this.user.firstName,
                         //profilePictures: this.ProfilePictures,
-                        profilePictures: fd.profilePictures
+                        profilePictures: /*fd.*/profilePictures
                     },
                     {
                         headers: {

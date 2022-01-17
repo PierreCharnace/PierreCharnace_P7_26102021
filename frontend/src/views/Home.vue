@@ -5,11 +5,30 @@
 </template>
 
 <script>
-
+import { mapState } from 'vuex'
 
 export default {
   name: 'Home',
-  
+   mounted:function () {
+
+        if (this.$store.state.user.token == '') {
+            this.$router.push('/login').catch(()=>{});
+            return ;
+        } 
+            this.$store.dispatch('getUserInfos');
+
+        if (localStorage.emailLocal) {
+            this.emailLocal = JSON.parse(localStorage.getItem('emailLocal'));
+        }
+            
+    },
+
+    computed:{
+    ...mapState({
+        user: 'userInfos'
+    })
+  },
+
 }
 
 

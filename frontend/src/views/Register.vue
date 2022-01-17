@@ -40,7 +40,7 @@ export default {
     firstName: '',
     email: '',
     password: '',
-    regLast : '',
+
     }
   },
   
@@ -52,7 +52,7 @@ export default {
         return false;
       }
     },
-    ...mapState(["status","regLastName"]),
+    ...mapState(["status"]),
   },
 
   methods: {

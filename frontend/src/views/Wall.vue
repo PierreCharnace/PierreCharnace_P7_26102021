@@ -12,10 +12,11 @@
                 <h5>Créer une publication</h5>
             </header>
             <div class="container">
-                <textarea placeholder="Écrivez votre message"></textarea>  
+                <textarea placeholder="Écrivez votre message"></textarea>
+                <img :src="uploadUrl" alt="image de publication" fluid>  
             </div>
             <div class="container end">
-                <input type="file" @change="onAttachmentSelected" name="end_btn" class="end_btn" />
+                <input type="file" @change="onAttachmentSelected" name="attachment" class="end_btn" />
                 <!--<label for="end_btn"> {{ post.attachment }} </label>-->
                 <button class="end_btn" @click="onUpload">Publier</button>
             </div>
@@ -36,7 +37,9 @@ export default {
     name: 'Wall',
     data: () => {
       return {
-        attachment: null
+        attachment: null,
+        uploadUrl:'',
+        userId: '',
       }
     },
     mounted:function () {
@@ -53,15 +56,18 @@ export default {
     methods: {
       onAttachmentSelected(e) {
         this.attachment = e.target.files[0]
+        this.uploadUrl = URL.createObjectURL(this.attachment) // create an url to preview it before uploading
       },
       onUpload() {
         let userToken = localStorage.getItem('user');
         userToken = JSON.parse(userToken)
         const fd = new FormData();
-        fd.append('images', this.attachment, this.attachment.name)
-        console.log(this.attachment);
+        fd.append('attachment', this.attachment, this.attachment.name)
+        fd.append('content', this.content);
+       // console.log('--->',this.attachment.name);
+        console.log(fd.append);
         axios.post("http://localhost:3000/api/posts/new", 
-        {fd},
+        fd,
         {headers: {
                   Authorization: "Bearer " + userToken.token
         }})
