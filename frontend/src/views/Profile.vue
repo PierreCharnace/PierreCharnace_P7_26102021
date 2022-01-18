@@ -21,7 +21,7 @@
             <input v-model="user.firstName" class="text-center m-1 cursor" disabled/>
             <input class="text-center m-1 cursor" v-model="emailLocal" disabled/>
             <b-button class="mt-1" @click="modify ++">Modifier mes informations</b-button>
-            <b-button class="mt-3"><i class="fas fa-trash-alt"></i></b-button>
+            <b-button class="mt-3" @click="deleteUser()"><i class="fas fa-trash-alt"></i></b-button>
         </div>  
     </div>
     
@@ -70,8 +70,7 @@ export default {
         changeImage(event) {
             this.profilePictures = event.target.files[0]
         },
-        updateProfile: 
-            function () {
+        updateProfile: function () {
                 let userToken = localStorage.getItem('user');
                 //const self = this;
                 userToken = JSON.parse(userToken)
@@ -102,6 +101,28 @@ export default {
                 }
         
             },
+
+            deleteUser: function () {
+                let userToken = localStorage.getItem('user');
+                userToken = JSON.parse(userToken)
+                console.log(userToken.userId);
+                axios.delete(`http://localhost:3000/api/users/userProfile/:${userToken.userId}`, {
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "Authorization": 'Bearer ' + userToken.token
+                    }
+                })
+                .then(res => {
+                    console.log(res);
+                    console.log('1111111111111',req.params.id);
+                    alert("Votre compte à bien été supprimé !");
+                    localStorage.removeItem("emailLocal");
+                    localStorage.removeItem("user");
+                    this.$router.push('/register');
+                })
+                .catch(error => (console.log('cannot delete user ' + error )))
+        
+            }
         
     }
     
