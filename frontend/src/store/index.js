@@ -41,7 +41,7 @@ export default new Vuex.Store({
       isModo: false,
       isAdmin: false,
     },
-    post: {
+    postInfos: {
       title: '',
       content: '',
       attachment: '',
@@ -49,7 +49,7 @@ export default new Vuex.Store({
       updatedAt:'',
       deletedAt:'',
     },
-    Comment: {
+    commentInfos: {
       content: '',
       userId:'',
       postId:'',
@@ -68,6 +68,12 @@ export default new Vuex.Store({
     },
     userInfos: function (state, userInfos) {
       state.userInfos = userInfos;
+    },
+    postInfos: function (state, postInfos) {
+      state.postInfos = postInfos;
+    },
+    commentInfos: function (state, commentInfos) {
+      state.commentInfos = commentInfos;
     },
     logout: function (state) {
       state.user = {
@@ -90,7 +96,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         instance.post('/users/login', userInfos)
         .then(function (response) {
-          commit('setStatus', 'regLastName');
+          commit('setStatus');
           commit('logUser', response.data);
           resolve(response);
         })

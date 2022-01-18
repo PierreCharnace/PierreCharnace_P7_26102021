@@ -1,14 +1,14 @@
 <template>
-    <div class="container mt-5">
-        <div class="card">
-            <div class="hour">Heure de la publication</div>
-            <p> Nom , prénom du publicateur</p>
-            <p> Texte du post</p>
-            <img class="card-img-top" src="@/assets/img-header-grey.png" alt="Card image cap">
+    <div  class="container mt-5" >
+       <div class="card">
+            <div class="hour">  </div>
+            <p>   </p>
+            <p>  </p>
+            <img class="card-img-top" src="" alt="image de publication">
             <div class="card-body">
                 <input class="card-text" placeholder="Écrivez un commentaire..."/>
                 <button class="btn mt-1" >Commenter</button><br><br>
-                <div class="comments mt-2 row">
+                <div  class="comments mt-2 row">
                     <div class="comments_user ">Nom prénom :</div>
                     <div class="comments_written ">sdfsdfddddddddddddddddddddddddddddddddddddddddtttttttttttttttttttttttttttfdsdfdfdssfdf</div>
                 </div>
@@ -23,16 +23,24 @@
 import { mapState } from 'vuex'
 
 export default {
- name: 'PostWall',
- props: {
+    name: 'PostWall',
+    props: {
 
- },
- computed:{
-    ...mapState([ "userInfos"]),
-  },
-methods : {
-    
-},
+    },
+    mounted:function () {
+
+        if (this.$store.state.user.token == '') {
+            this.$router.push('/login').catch(()=>{});
+            return ;
+        } 
+            this.$store.dispatch('getUserInfos', 'getPostInfos');
+    },
+    computed:{
+        ...mapState(["userInfos", "postInfos"]),
+    },
+    methods : {
+        //get list Posts///////////////////
+    },
 }
 
 </script>
@@ -81,7 +89,6 @@ $groupBorder :rgb(186, 77, 85);
 .comments_user {
     font-size: 0.9rem;
     margin-right: 8px;
-    min-width: 100px;
 }
 .comments_written {
     background-color: rgb(255, 215, 215);

@@ -9,8 +9,8 @@
             <input id="newLastName" v-model="user.lastName" class="text-center m-1" placeholder="nom"/> 
             <input id="newFirstName" v-model="user.firstName" class="text-center m-1" placeholder="prénom"/>
             <input class="text-center m-1 cursor" v-model="emailLocal" disabled/>
-            <button class="mt-1" @click="modify --, updateProfile()" type="button">Enregistrer mes informations</button>
-            <b-button class="mt-3"><i class="fas fa-trash-alt"></i></b-button>
+            <b-button class="mt-1" @click="modify --, updateProfile()" type="button">Enregistrer mes informations</b-button>
+            <b-button class="mt-3" @click="deleteProfile()"><i class="fas fa-trash-alt"></i></b-button>
         </div>
     </form>
     <div v-else class="card" style="width: 18rem;">
@@ -21,7 +21,7 @@
             <input v-model="user.firstName" class="text-center m-1 cursor" disabled/>
             <input class="text-center m-1 cursor" v-model="emailLocal" disabled/>
             <b-button class="mt-1" @click="modify ++">Modifier mes informations</b-button>
-            <b-button class="mt-3" @click="deleteUser()"><i class="fas fa-trash-alt"></i></b-button>
+            <b-button class="mt-3" @click="deleteProfile()"><i class="fas fa-trash-alt"></i></b-button>
         </div>  
     </div>
     
@@ -82,7 +82,7 @@ export default {
                         lastName : this.user.lastName,
                         firstName: this.user.firstName,
                         //profilePictures: this.ProfilePictures,
-                        profilePictures: /*fd.*/profilePictures
+                       // profilePictures: /*fd.*/profilePictures
                     },
                     {
                         headers: {
@@ -102,22 +102,22 @@ export default {
         
             },
 
-            deleteUser: function () {
+            deleteProfile: function () {
                 let userToken = localStorage.getItem('user');
                 userToken = JSON.parse(userToken)
-                console.log(userToken.userId);
-                axios.delete(`http://localhost:3000/api/users/userProfile/:${userToken.userId}`, {
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "Authorization": 'Bearer ' + userToken.token
-                    }
-                })
+                axios
+                    .delete(`http://localhost:3000/api/users/userProfile/${userToken.userId}`, {
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "Authorization": 'Bearer ' + userToken.token
+                        }
+                    })
                 .then(res => {
                     console.log(res);
-                    console.log('1111111111111',req.params.id);
                     alert("Votre compte à bien été supprimé !");
                     localStorage.removeItem("emailLocal");
                     localStorage.removeItem("user");
+                    
                     this.$router.push('/register');
                 })
                 .catch(error => (console.log('cannot delete user ' + error )))

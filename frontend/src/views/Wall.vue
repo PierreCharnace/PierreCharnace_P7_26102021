@@ -55,7 +55,7 @@ export default {
             this.$router.push('/login').catch((err)=>{err});
             return ;
         }
-        this.$store.dispatch('getUserInfos');
+        this.$store.dispatch('getUserInfos', 'setStatus', 'getPostInfos');
     },
 
      computed:{
