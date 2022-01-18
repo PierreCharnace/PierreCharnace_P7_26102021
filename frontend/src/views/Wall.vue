@@ -13,16 +13,17 @@
                 </header>
                 <div class="container">
                     <textarea v-model="content" placeholder="Écrivez votre message"></textarea>
-                    <img :src="uploadUrl" alt="image de publication" fluid>  
+                    <img :src="uploadUrl" alt="image de publication" max-width=100% class="img-fluid" height: auto>  
                 </div>
                 <div class="container end">
-                    <input type="file" @change="onAttachmentSelected" name="attachment" class="end_btn" />
+                    <div fluid><input  type="file" @change="onAttachmentSelected" name="attachment" class="end_btn"/></div>
                     <!--<label for="end_btn"> {{ post.attachment }} </label>-->
-                    <button type="button" class="end_btn" @click="onUpload">Publier</button>
+                    <button type="submit" class="end_btn" @click="onUpload">Publier</button>
                 </div>
               </form>
           </div>
         </div> 
+       <PostWall />
     </div>
 </div>
 </template>
@@ -32,15 +33,21 @@
 import { mapState } from 'vuex'
 import axios from 'axios'
 import fs from 'fs'
+import PostWall from "../components/PostWall.vue";
+
 
 export default {
     name: 'Wall',
+    components: {
+     PostWall,
+  },
     data: () => {
       return {
         selectedFile: '',
         uploadUrl:'',
         UserId: '',
-        content:''
+        content:'',
+        attachment:'',
       }
     },
     mounted:function () {
@@ -55,26 +62,27 @@ export default {
     ...mapState(["userInfos"])
     },
     methods: {
-      onAttachmentSelected(e) {console.log('yyyyyyyyyyyy',e);
-        this.selectedFile = e.target.files[0]
-        this.uploadUrl = URL.createObjectURL(this.selectedFile) // create an url to preview it before uploading
+      onAttachmentSelected(e) {
+        this.attachment = e.target.files[0]
+        this.uploadUrl = URL.createObjectURL(this.attachment) // create an url to preview it before uploading
       },
       onUpload() {
         let userToken = localStorage.getItem('user');
-        userToken = JSON.parse(userToken)
+        userToken = JSON.parse(userToken)// get user token into the localStorage
 
-        const fd = new FormData();
-        fd.append('attachment',this.selectedFile, this.selectedFile.name)
+
+        const fd = new FormData();//create the data for axios
+        fd.append('attachment',this.attachment, this.attachment.name)
         fd.append('content', this.content);
-        console.log('-->',fd.get('content',));
-        console.log('--***>',fd.get('attachment'));
+
 
         axios.post("http://localhost:3000/api/posts/new",
         
         fd,
              
         {headers: {
-                  Authorization: "Bearer " + userToken.token
+          "Content-Type": "multipart/form-data",
+          Authorization: "Bearer " + userToken.token
         }})
         
         .then(res => {
