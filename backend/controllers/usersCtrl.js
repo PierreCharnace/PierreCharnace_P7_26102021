@@ -209,8 +209,18 @@ module.exports = {
     const userId      = jwtUtils.getUserId(headerAuth);
     const lastName = req.body.lastName;
     const firstName = req.body.firstName;
-    const profilePictures = req.body.profilePictures;
+    const profilePictures = req.file ? `${req.protocol}://${req.get('host')}/profilePictures/${req.file.filename}` : null;
 
+    if (lastName == null || firstName == null) {
+      return res.status(400).json({ 'error': 'paramètres manquants' });
+    }
+    if (lastName.length >= 30 || lastName.length <= 1) {
+      return res.status(400).json({ 'error': 'Nom non comformes il doit être compris entre 2 et 30 caractères'});
+    }
+    if (firstName.length >= 30 || firstName.length <= 1) {
+        return res.status(400).json({ 'error': 'Prénom non comformes il doit être compris entre 2 et 30 caractères'});
+    }
+   
     asyncLib.waterfall([
       function(done) {
         User.findOne({
@@ -227,8 +237,8 @@ module.exports = {
         if(userFound) {
           userFound.update({    
             lastName: (lastName ? lastName : userFound.lastName),
-            firstName: (firstName ? firstName : userFound.firstName),                         // verify if birthday and profilePictures is valid in req, if ok, 
-            profilePictures: (profilePictures ? profilePictures : userFound.profilePictures) // substitute or if same thing I let them
+            firstName: (firstName ? firstName : userFound.firstName),                         // verify profilePictures is valid in req, if ok, 
+           // profilePictures: (profilePictures ? profilePictures : userFound.profilePictures) // substitute or if same thing I let them
           }).then(function() {
               done(userFound); // when is update, return userFound, the waterfall is done
           }).catch(function(err) {
@@ -255,7 +265,7 @@ module.exports = {
       function(done) {
         User.findOne({ 
             where: { id: userId } })
-        .then(function(userFound) {
+        .then(function(userFound) {console.log(userFound);
             done(null, userFound);
         })
         .catch(function(err) {
@@ -265,11 +275,11 @@ module.exports = {
     function(userFound, done) {
 
       // Checks if the user is the owner of the targeted one
-      if (userFound.id == req.body.userId || userFound.isAdmin == true) { // or if he's admin
-
+      if (userFound.id == req.params.id || userFound.isAdmin == true) { // or if he's admin
+       
           // Soft-deletion modifying the post the ad a timestamp to deletedAt
           User.destroy({
-                  where: { id: req.params.id }
+                  where: { id: userId }
               })
               .then(() => res.status(200).json({ message: 'Utilisateur supprimé' })) // send confirmation if done
               .catch(error => res.status(500).json({ 'error': 'cannot delete user' }))

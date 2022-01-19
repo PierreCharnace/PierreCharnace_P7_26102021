@@ -3,10 +3,11 @@ const models = require('../models');
 const asyncLib = require('async');
 const jwtUtils = require('../utils/jwt.utils')
 const db = require("../models/index");
-const User = db.user;
 const Post = db.post;
+const User = db.user;
+const Comment = db.comment;
 // Constants
-const TITLE_LIMIT = 2;
+
 const CONTENT_LIMIT = 4;
 //Routes
 module.exports = {
@@ -15,22 +16,23 @@ module.exports = {
         const headerAuth = req.headers['authorization'];
         const userId = jwtUtils.getUserId(headerAuth);
         // Params
-        const title = req.body.title;
+        //const title = req.body.title;
         const content = req.body.content;
-        const attachment = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null;
+        const attachmentUrl = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null;
 
-        if (title == null || content == null) {
-            return res.status(400).json({ 'error': 'missing parameters' });
+
+        if ( content == null /*|| attachmentUrl == null*/) {
+            return res.status(401).json({ 'error': 'missing parameters' });
         }
 
-        if (title.length <= TITLE_LIMIT || content.length <= CONTENT_LIMIT) {
-            return res.status(400).json({ 'error': 'invalid parameters' });
+        if (content.length <= CONTENT_LIMIT) {
+            return res.status(402).json({ 'error': 'invalid parameters' });
         }
 
         asyncLib.waterfall([
-            
+             // 1. Get the user
             function(done) {
-                models.User.findOne({ 
+                User.findOne({ 
                     where: { id: userId } })
                 .then(function(userFound) {
                     done(null, userFound);
@@ -38,13 +40,13 @@ module.exports = {
                 .catch(function(err) {
                     return res.status(500).json({ 'error': 'unable to verify user' });
                 });
-            },
+            }, // 2. If found, create the post with inputs
             function(userFound, done) {
                 if(userFound) {
-                    models.Post.create({
-                        title   : title,
+                    Post.create({
+                      //  title   : title,
                         content : content,
-                        attachment: attachment,
+                        attachment: attachmentUrl,
                         UserId  : userFound.id
                     })
                     .then(function(newPost) {
@@ -55,6 +57,7 @@ module.exports = {
                 }
             },
         ], 
+        // 3. if done, confirm it
         function(newPost) {
             if (newPost) {
                 return res.status(201).json({ newPost });
@@ -69,16 +72,17 @@ module.exports = {
         const offset = parseInt(req.query.offset); //|
         const order = req.query.order; // get posts by particular order
 
-        models.Post.findAll({
-            order: [(order != null) ? order.split(':') : ['title', 'ASC']],
+        Post.findAll({
+            order: [(order != null) ? order.split(':') : ['createdAt', 'DESC']],
             attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
             limit: (!isNaN(limit)) ? limit : null,
             offset: (!isNaN(offset)) ? offset : null,
-            include: [{
-                model: models.User,
-                attributes: [ 'lastName', 'firstName', 'profilePictures','isAdmin']
+            include: [{ // Links the post with User and Comments tables
+                model: User,
+                Comment,
+              //  attributes: [ 'lastName', 'firstName', 'profilePictures','isAdmin','isModo']
             }]
-        }).then(function(posts) {
+        }).then(function(posts) {// confirm or not
             if (posts) {
                 res.status(200).json(posts);
             } else {
