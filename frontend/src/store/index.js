@@ -41,20 +41,7 @@ export default new Vuex.Store({
       isModo: false,
       isAdmin: false,
     },
-    postInfos: {
-      title: '',
-      content: '',
-      attachment: '',
-      createdAt:'',
-      updatedAt:'',
-      deletedAt:'',
-    },
-    commentInfos: {
-      content: '',
-      userId:'',
-      postId:'',
-    },
-    
+   
   },// mettre pattern pour register
 
   mutations: {

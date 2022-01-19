@@ -18,7 +18,7 @@
                 <div class="container end">
                     <div fluid><input  type="file" @change="onAttachmentSelected" name="attachment" class="end_btn"/></div>
                     <!--<label for="end_btn"> {{ post.attachment }} </label>-->
-                    <button type="submit" class="end_btn" @click="onUpload">Publier</button>
+                    <button type="button" class="end_btn" @click="onUpload()">Publier</button>
                 </div>
               </form>
           </div>
@@ -43,11 +43,12 @@ export default {
   },
     data: () => {
       return {
-        selectedFile: '',
+
         uploadUrl:'',
         UserId: '',
         content:'',
         attachment:'',
+        postId:'',
       }
     },
     mounted:function () {
@@ -74,7 +75,8 @@ export default {
         const fd = new FormData();//create the data for axios
         fd.append('attachment',this.attachment, this.attachment.name)
         fd.append('content', this.content);
-
+        console.log(fd.get('attachment'));
+        console.log(fd.get('content'));
 
         axios.post("http://localhost:3000/api/posts/new",
         
@@ -86,11 +88,17 @@ export default {
         }})
         
         .then(res => {
+          window.alert('Post publié')
           console.log('---->',res)
+          localStorage.setItem('postInfos', JSON.stringify(res))
+          //window.location.reload();
+  
         }).catch((err) => {
              console.log(err);
           })
-      }
+        
+      },
+        
     }
 }
 </script>

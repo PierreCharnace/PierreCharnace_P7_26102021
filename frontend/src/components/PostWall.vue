@@ -1,45 +1,139 @@
-<template>
-    <div  class="container mt-5" >
-       <div class="card">
-            <div class="hour">  </div>
-            <p>   </p>
-            <p>  </p>
-            <img class="card-img-top" src="" alt="image de publication">
-            <div class="card-body">
-                <input class="card-text" placeholder="Écrivez un commentaire..."/>
-                <button class="btn mt-1" >Commenter</button><br><br>
-                <div  class="comments mt-2 row">
-                    <div class="comments_user ">Nom prénom :</div>
-                    <div class="comments_written ">sdfsdfddddddddddddddddddddddddddddddddddddddddtttttttttttttttttttttttttttfdsdfdfdssfdf</div>
+<template >
+
+        <div class="container post-container mt-5" v-if="posts != null" >
+        <div class="card" v-for="post in posts" v-bind:key="post.id" >
+                <button class="erase" @click="erase()"><i class="fas fa-times-circle"></i></button>
+                <div class="hour"> {{ post.createdAt }} </div>
+                <p > {{ post.User }}: </p>
+                <p class="post-content"> {{post.content}} </p>
+                <img class="card-img-top" :src="post.attachment"  alt="image de publication">
+                <form class="card-body" @:click="createComment()">
+                    <input  class="card-text" placeholder="Écrivez un commentaire..."/>
+                    <button class="btn mt-1" type="button" >Commenter</button><br><br>
+                </form>
+                <div class="comments mt-2 row" v-for="(comment) in comments.filter((comment) => {return comment.postId == post.PostId})" :key="comment.PostId">
+                    <button class="erase-comments" ><i class="fas fa-times-circle"></i></button>
+                    <div class="comments_user "> {{ comment.User.lastName }} {{ comment.User.firstName}} :</div>
+                    <div class="comments_written "> {{ comment.content }} </div>
                 </div>
             </div>
         </div>
-    </div>
+
 </template>
 
 
 
+
+    <div class="comments mt-2 row" for="comment in comments" :key="comment.id">
+        <button class="erase-comments" ><i class="fas fa-times-circle"></i></button>
+        <div class="comments_user ">Nom prénom :</div>
+        <div class="comments_written ">sdfsdfddddddddddddddddddddddddddddddddddddddddtttttttttttttttttttttttttttfdsdfdfdssfdf</div>
+    </div>
+
+
 <script>
 import { mapState } from 'vuex'
-
+import axios from 'axios'
+//:src="uploadUrl"  v-model="firstName"
 export default {
     name: 'PostWall',
+    data: () => {
+        return {
+            user : JSON.parse(localStorage.getItem('user')),
+            newComment: '',
+            posts :[] ,
+            comments: [],
+             
+        post: {
+        lastName: '',
+        firstName:'',
+        attachment: '',
+        id: '',
+        isAdmin: '',
+        isModo:'',
+        profilePictures:'',
+        createdAt:'',
+      },
+    
+        }
+    }, 
+      props: {
+      post: {
+      type: Object,
+      required: true
+    }
+    },      
+    
+    async created() {
+    // GET LISTS POSTS
+    await axios
+            .get('http://localhost:3000/api/posts/', {
+       
+            })
+            .then((response) => {
+              this.posts = response.data;
+              console.log(response.data);
+
+            })
+            .catch(err => {
+              console.log(err);
+             // this.$store.commit('logout');
+            //  this.$router.push('/login');
+            //  localStorage.removeItem("emailLocal");
+             // localStorage.removeItem("user");
+            //  localStorage.removeItem("postInfos");
+              window.alert('Veuillez vous connecter pour accéder au site')
+            })
+    // GET ALL COMMENTS
+    await axios
+            .get('http://localhost:3000/api/comments', {
+     
+            })
+            .then((response) => {
+              this.comments = response.data;
+
+            })
+            .catch(err => {
+              console.log(err + "User inconnu ou comments indisponibles");
+            })
+  },
     props: {
 
     },
-    mounted:function () {
+    mounted: function () {
 
         if (this.$store.state.user.token == '') {
             this.$router.push('/login').catch(()=>{});
             return ;
         } 
-            this.$store.dispatch('getUserInfos', 'getPostInfos');
+  
     },
     computed:{
-        ...mapState(["userInfos", "postInfos"]),
+        ...mapState({
+            userInfos:"userInfos"
+        }),
     },
     methods : {
-        //get list Posts///////////////////
+       
+    createComment: function () {
+
+      const data = JSON.stringify({content: this.newComment})
+      axios
+        .post('http://localhost:3000/api/' + id + '/comments/new', data, {
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + this.user.token
+          },
+        })
+        .then((res) => {
+            console.log(res);
+            window.location.reload();
+        })
+        .catch(() => {
+            window.alert('Impossible de commenter')
+        })
+    },
+
     },
 }
 
@@ -50,19 +144,49 @@ $groupBorder :rgb(186, 77, 85);
 
 .container{
     display: flex;
-    justify-content: center;
 
+}
+.post-container {
+    flex-direction: column;
+    align-items: center;
 }
 
 .card {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
     color: black;
     max-width: 600px;
     background-color: grey;
     border-radius: 12px;
     
 }
+.fa-times-circle {
+   border-radius: 10%;
+    color: red;
+}
+.erase {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    border-radius: 100%;
+    width:10px;
+    height: 10px;
+    margin: 3% 0 0 93%;
+    border: none;
+}
 .hour {
     font-size: 0.8rem;
+    margin-top: -5%;
+}
+.post-content {
+    display: flex;
+    padding-left: 10px ;
+    background-color: white;
+    width: 90%;
+    border-radius: 12px;
+    border: ridge $groupBorder;
 }
 .card-text {
     max-width: 500px;
@@ -85,6 +209,17 @@ $groupBorder :rgb(186, 77, 85);
     border-radius: 12px;
     border: ridge $groupBorder;
 
+}
+.erase-comments {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    border-radius: 100%;
+    width:10px;
+    height: 10px;
+    margin: 3% 0 0 90%;
+    border: none;
 }
 .comments_user {
     font-size: 0.9rem;

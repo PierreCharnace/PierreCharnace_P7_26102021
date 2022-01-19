@@ -43,7 +43,7 @@ export default {
 
 @media ( min-width: 1440px) {
   .home {
-    height: 1500px;
+    height: 500px;
   }  
 }
 

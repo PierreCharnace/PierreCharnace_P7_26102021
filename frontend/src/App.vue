@@ -42,11 +42,13 @@ nav, footer {
 nav {
   border-bottom: $groupBorder;
 }
-
+html {
+  background-color: $bgmain;
+}
 .home, .register, .login {
   background: $bgmain;
   color: white;
-  height: 2000px;
+  height: 100%;
 }
 
 footer {
