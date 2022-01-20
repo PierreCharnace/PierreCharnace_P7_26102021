@@ -41,6 +41,13 @@ export default new Vuex.Store({
       isModo: false,
       isAdmin: false,
     },
+    User: {
+      lastName:'',
+      firstName:'',
+      isModo: '',
+      isAdmin:'',
+      content:'',
+    },
    
   },// mettre pattern pour register
 

@@ -1,10 +1,10 @@
 <template >
 
-        <div class="container post-container mt-5" v-if="posts != null" >
-        <div class="card" v-for="post in posts" v-bind:key="post.id" >
+        <div class="container post-container" v-if="posts != null" >
+            <div class="card mt-2" v-for="(post,idx) in posts" :key="idx" >
                 <button class="erase" @click="erase()"><i class="fas fa-times-circle"></i></button>
                 <div class="hour"> {{ post.createdAt }} </div>
-                <p > {{ post.User }}: </p>
+                <div > {{ post.User && post.User.lastName ? post.User.lastName : 'nan' }}: </div>
                 <p class="post-content"> {{post.content}} </p>
                 <img class="card-img-top" :src="post.attachment"  alt="image de publication">
                 <form class="card-body" @:click="createComment()">
@@ -13,7 +13,7 @@
                 </form>
                 <div class="comments mt-2 row" v-for="(comment) in comments.filter((comment) => {return comment.postId == post.PostId})" :key="comment.PostId">
                     <button class="erase-comments" ><i class="fas fa-times-circle"></i></button>
-                    <div class="comments_user "> {{ comment.User.lastName }} {{ comment.User.firstName}} :</div>
+                    <div class="comments_user "> {{ comment.User }} {{ comment.User.firstName}} :</div>
                     <div class="comments_written "> {{ comment.content }} </div>
                 </div>
             </div>
@@ -21,20 +21,10 @@
 
 </template>
 
-
-
-
-    <div class="comments mt-2 row" for="comment in comments" :key="comment.id">
-        <button class="erase-comments" ><i class="fas fa-times-circle"></i></button>
-        <div class="comments_user ">Nom prénom :</div>
-        <div class="comments_written ">sdfsdfddddddddddddddddddddddddddddddddddddddddtttttttttttttttttttttttttttfdsdfdfdssfdf</div>
-    </div>
-
-
 <script>
 import { mapState } from 'vuex'
 import axios from 'axios'
-//:src="uploadUrl"  v-model="firstName"
+
 export default {
     name: 'PostWall',
     data: () => {
@@ -43,37 +33,33 @@ export default {
             newComment: '',
             posts :[] ,
             comments: [],
-             
-        post: {
-        lastName: '',
-        firstName:'',
-        attachment: '',
-        id: '',
-        isAdmin: '',
-        isModo:'',
-        profilePictures:'',
-        createdAt:'',
-      },
-    
         }
     }, 
       props: {
-      post: {
+     /* post: {
       type: Object,
       required: true
-    }
+    }*/
     },      
     
     async created() {
-    // GET LISTS POSTS
+    // GET LISTS POSTS 
+        let userToken = localStorage.getItem('user');
+        userToken = JSON.parse(userToken)// get user token into the localStorage
+
+
+  
+
     await axios
             .get('http://localhost:3000/api/posts/', {
-       
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: "Bearer " + userToken.token
+            }
             })
             .then((response) => {
-              this.posts = response.data;
-              console.log(response.data);
-
+                this.posts = response.data;
+                console.log(response.data);
             })
             .catch(err => {
               console.log(err);
@@ -105,7 +91,7 @@ export default {
         if (this.$store.state.user.token == '') {
             this.$router.push('/login').catch(()=>{});
             return ;
-        } 
+        }
   
     },
     computed:{
@@ -114,9 +100,10 @@ export default {
         }),
     },
     methods : {
+        
        
     createComment: function () {
-
+        let id=this.post.id
       const data = JSON.stringify({content: this.newComment})
       axios
         .post('http://localhost:3000/api/' + id + '/comments/new', data, {
@@ -133,7 +120,7 @@ export default {
             window.alert('Impossible de commenter')
         })
     },
-
+        
     },
 }
 
@@ -159,7 +146,8 @@ $groupBorder :rgb(186, 77, 85);
     max-width: 600px;
     background-color: grey;
     border-radius: 12px;
-    
+    border: 1px solid $groupBorder;
+    box-shadow: 1px 1px 5px grey;
 }
 .fa-times-circle {
    border-radius: 10%;

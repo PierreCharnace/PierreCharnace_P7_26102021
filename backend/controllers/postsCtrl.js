@@ -18,10 +18,10 @@ module.exports = {
         // Params
         //const title = req.body.title;
         const content = req.body.content;
-        const attachmentUrl = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null;
+        const attachment = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null;
 
 
-        if ( content == null /*|| attachmentUrl == null*/) {
+        if ( content == null || attachment == null) {
             return res.status(401).json({ 'error': 'missing parameters' });
         }
 
@@ -44,9 +44,9 @@ module.exports = {
             function(userFound, done) {
                 if(userFound) {
                     Post.create({
-                      //  title   : title,
+
                         content : content,
-                        attachment: attachmentUrl,
+                        attachment: attachment,
                         UserId  : userFound.id
                     })
                     .then(function(newPost) {
@@ -66,12 +66,14 @@ module.exports = {
             }
         });
     },
+
+    
     listPosts: function(req, res, next) {
         const fields = req.query.fields; // column when we need to display
         const limit = parseInt(req.query.limit);  //|get posts by segmentation ( 20 posts per leaf)
         const offset = parseInt(req.query.offset); //|
         const order = req.query.order; // get posts by particular order
-
+        asyncLib.waterfall([
         Post.findAll({
             order: [(order != null) ? order.split(':') : ['createdAt', 'DESC']],
             attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
@@ -80,7 +82,8 @@ module.exports = {
             include: [{ // Links the post with User and Comments tables
                 model: User,
                 Comment,
-              //  attributes: [ 'lastName', 'firstName', 'profilePictures','isAdmin','isModo']
+                attributes: ['lastName', 'firstName', 'profilePictures','isAdmin','isModo'],
+                
             }]
         }).then(function(posts) {// confirm or not
             if (posts) {
@@ -93,8 +96,8 @@ module.exports = {
             res.status(500).json({ 'error': 'invalid fields' });
         })
 
-    },
-    deleteOnePost: (req, res) => {
+        ])},
+    deleteOnePost: (req, res, next) => {
         
         const headerAuth  = req.headers['authorization'];
         const userId      = jwtUtils.getUserId(headerAuth);
