@@ -1,0 +1,42 @@
+Projet 7 du parcours Développeur Web Openclassrooms
+Créer un réseau social d'entreprise
+
+FRONTEND
+
+Vue.js + Bootstrap 
+
+BACKEND
+
+Node.js + Express  + Sequelize 
+
+
+DATABASE
+
+MySQL + Workbench + lamp
+
+
+
+Installation
+
+Vue.jsSur le dossier Groupomania avec un terminal:
+-> npm install
+-> npm run serve
+
+
+Node.js Sur le dossier backend avec un autre terminal:
+-> npm install
+-> nodemon server
+
+MySQL logo Utiliser un serveur de Base de Données type MAMP/XAMPP + Workbench pour visualiser et lier les modèles de tables
+
+Créer les 3 bases de données nécessaires :
+-> database_test / database_developement / database_production
+
+Utiliser Sequelize pour créer les tables directement via Node.JS:
+-> sequelize db:create
+-> sequelize db:migrate
+
+Contenu du dossier .env :
+PORT=3000
+ENCRYPTEDKEYEMAIL = "SECRET_KEY_FOR_EMAIL"
+JWTSIGNSECRET = 'THE SECRET KEY FOR GROUPOMANIA'
