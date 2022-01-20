@@ -21,11 +21,15 @@ Installation
 Vue.jsSur le dossier Groupomania avec un terminal:
 -> npm install
 -> npm run serve
+Le serveur doit fonctionner sur http://localhost:8080/.
+
 
 
 Node.js Sur le dossier backend avec un autre terminal:
 -> npm install
 -> nodemon server
+Le serveur doit fonctionner sur http://localhost:3000/.
+
 
 MySQL logo Utiliser un serveur de Base de Données type MAMP/XAMPP + Workbench pour visualiser et lier les modèles de tables
 
