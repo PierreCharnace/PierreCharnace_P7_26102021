@@ -36,7 +36,7 @@ Utiliser Sequelize pour créer les tables directement via Node.JS:
 -> sequelize db:create
 -> sequelize db:migrate
 
-Contenu du dossier .env :
+Contenu du dossier config/.env :
 PORT=3000
 ENCRYPTEDKEYEMAIL = "SECRET_KEY_FOR_EMAIL"
 JWTSIGNSECRET = 'THE SECRET KEY FOR GROUPOMANIA'
