@@ -13,12 +13,11 @@
                 </header>
                 <div class="container">
                     <textarea v-model="content" placeholder="Écrivez votre message"></textarea>
-                    <img :src="uploadUrl" alt="image de publication" max-width=100% class="img-fluid" height: auto>  
+                    <img v-if="uploadUrl != null" :src="uploadUrl" alt="image de publication" max-width=100% class="img-fluid" height: auto>  
                 </div>
                 <div class="container end">
-                    <div fluid><input  type="file" @change="onAttachmentSelected" name="attachment" class="end_btn"/></div>
-                    <!--<label for="end_btn"> {{ post.attachment }} </label>-->
-                    <button type="button" class="end_btn" @click="onUpload()">Publier</button>
+                    <div fluid><input  type="file" @change="onAttachmentSelected " name="attachment" class="end_btn"/></div>
+                    <button type="button" class="end_btn" @click="createPost()">Publier</button>
                 </div>
               </form>
           </div>
@@ -67,16 +66,17 @@ export default {
         this.attachment = e.target.files[0]
         this.uploadUrl = URL.createObjectURL(this.attachment) // create an url to preview it before uploading
       },
-      onUpload() {
+
+      createPost() {
         let userToken = localStorage.getItem('user');
         userToken = JSON.parse(userToken)// get user token into the localStorage
-
-
+        if (this.attachment.name == null || this.attachment == null ) {
+          window.alert('Il faut mettre une image')
+        }
         const fd = new FormData();//create the data for axios
         fd.append('attachment',this.attachment, this.attachment.name)
         fd.append('content', this.content);
-        console.log(fd.get('attachment'));
-        console.log(fd.get('content'));
+        
 
         axios.post("http://localhost:3000/api/posts/new",
         
@@ -89,12 +89,12 @@ export default {
         
         .then(res => {
           window.alert('Post publié')
-          console.log('---->',res)
           localStorage.setItem('postInfos', JSON.stringify(res))
-          //window.location.reload();
+          this.$router.go()
   
-        }).catch((err) => {
-             console.log(err);
+        }).catch((err) => {  
+          window.alert("Il manque quelque chose")
+          localStorage.removeItem('postInfos')
           })
         
       },

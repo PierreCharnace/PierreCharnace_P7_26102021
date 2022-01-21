@@ -90,7 +90,7 @@ export default {
                         }
                     }).then (response => {
                         window.alert("Modifications effectuées")
-                        window.location.reload();
+                        this.$router.go()
 
                     }).catch(function (error) {
                         if (error == "Error: Request failed with status code 400") {
