@@ -4,7 +4,7 @@
             <div class="card mt-2" v-for="(post,idx) in posts" :key="idx" >
                 <button v-if="user.userId == post.userId || userInfos.isAdmin == 1 || userInfos.isModo == 1" class="erase" @click.prevent="erasePost(post.id)"><i class="fas fa-times-circle"></i></button>
                 <div class="hour"> À {{ post.createdAt }} </div>
-                <div > {{ post.User && post.User.lastName ? post.User.lastName : 'Inconnu' }} {{ post.User && post.User.firstName ? post.User.firstName: 'Inconnu'}} a dit </div>
+                <div ><i class="fas fa-trash-alt" type="button" v-if="userInfos.isAdmin == 1" @click="deleteProfile(post.userId)"> {{post.userId}} {{ post.userToken }} </i> {{ post.User && post.User.lastName ? post.User.lastName : 'Inconnu' }} {{ post.User && post.User.firstName ? post.User.firstName: 'Inconnu'}} a dit </div>
                 <p class="post-content"> {{post.content}} </p>
                 <img class="card-img-top" :src="post.attachment"  alt="image de publication">
                 <form class="card-body">
@@ -14,8 +14,7 @@
      
                 <div  class="comments mt-1 row" v-for="comment in comments.filter(comment => {return comment.postId == post.id})" :key="comment.id">
                     <button v-if="user.userId == comment.userId || userInfos.isAdmin == 1 || userInfos.isModo == 1" class="erase" @click.prevent="eraseComment(comment.id)"><i class="fas fa-times-circle"></i></button>
-                    <div class="comments_user ">{{comment.User && comment.User.firstName ? comment.User.firstName: 'Inconnu'}} {{comment.User && comment.User.lastName ? comment.User.lastName: 'Inconnu'}} :</div>
-                    <div class="comments_written "> {{ comment.content }} <br /> </div>
+                    <div class="comments_user ">{{comment.User && comment.User.firstName ? comment.User.firstName: 'Inconnu'}} {{comment.User && comment.User.lastName ? comment.User.lastName: 'Inconnu'}} : {{ comment.content }}</div>
                 </div>
 
             </div>
@@ -98,14 +97,12 @@ export default {
     createComment(id) {
         let userToken = localStorage.getItem('user');
         userToken = JSON.parse(userToken)// get user token into the localStorage
-
-        if (this.newComment == null) {
+        if (this.newComment == '') {
             window.alert("Écrivez votre commentaire avant de l'envoyer")
+            return
         }
-        const fd = new FormData();
        
         const data = JSON.stringify({content: this.newComment})
-        console.log(data);
         axios.post('http://localhost:3000/api/comments/new/'+ id ,
 
             data, 
@@ -117,8 +114,8 @@ export default {
             })
             .then(res => {
                 console.log(res);
-             //   window.alert('Votre commentaire est pris en compte.')
-              //  this.$router.go()
+                window.alert('Votre commentaire est pris en compte.')
+                this.$router.go()
             })
             .catch((err) => {
                 console.log(err);
@@ -161,7 +158,27 @@ export default {
             console.log(err);
             window.alert("impossible d'effacer le post")
         })
-    }
+    },
+      deleteProfile: function (id) {
+                   let userToken = localStorage.getItem('user');
+                userToken = JSON.parse(userToken)
+                axios
+                    .delete(`http://localhost:3000/api/users/userProfile/${id}`, {
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "Authorization": 'Bearer ' + userToken.token
+                        }
+                    })
+                .then(res => {
+                    console.log(res);
+                    confirm("Le compte à bien été supprimé !");
+                   this.$router.go()
+                })
+                .catch(error => (console.log('cannot delete user ' + error )))
+        
+      },
+        
+
     },
         
     
@@ -208,7 +225,7 @@ $groupBorder :rgb(186, 77, 85);
     border-radius: 100%;
     width:10px;
     height: 10px;
-    margin: 3% 0 0 93%;
+    margin: 3% 0 -5% 93%;
     border: none;
     z-index: 1;
 }
@@ -238,23 +255,24 @@ $groupBorder :rgb(186, 77, 85);
 }
 
 .comments {
-    //display: flex;
+    display: flex;
     justify-content: center;
     align-items: center;
     background-color: rgb(255, 215, 215);
     border-radius: 12px;
     width: 80%;
+    min-height: 40px;
 }
 .comments_user {
     font-size: 0.9rem;
     margin-right: 8px;
     
-    margin-top: -20px;
 }
 .comments_written {
     background-color: rgb(255, 215, 215);
     border-radius: 1rem;
     border: none;
+    height: 100%;
     width: 100%;
 }
 
