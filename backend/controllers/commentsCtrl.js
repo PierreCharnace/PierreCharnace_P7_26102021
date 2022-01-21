@@ -15,7 +15,8 @@ module.exports = {
         const userId = jwtUtils.getUserId(headerAuth);
         const postId = req.params.id;
         // Params
-        const content = req.body.content;
+        const content = req.body;
+        console.log(req.body.content);
         if (content == null) {
             return res.status(400).json({ 'error': 'missing parameters' });
         }
@@ -43,7 +44,7 @@ module.exports = {
                         done(newComment);    
                     })
                     .catch(function(err) {
-                        return res.status(500).json({ 'error': postId });
+                        return res.status(400).json({ 'error': 'user not found' });
                     });
                 } else {
                     res.status(404).json({ 'error': 'user not found' });
@@ -54,18 +55,20 @@ module.exports = {
             if (newComment) {
                 return res.status(201).json({ newComment });
             } else {
-                return res.status(500).json({ 'error': 'cannot send comments'});
+                return res.status(505).json({ 'error': 'cannot send comments'});
             }
         });
     },
 
     listComments: function(req, res, next) {
-
+        const fields = req.query.fields; // column when we need to display
+        const order = req.query.order; // get posts by particular order
         Comment.findAll({
-
+            order: [(order != null) ? order.split(':') : ['createdAt', 'DESC']],
+            attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
             include: [{
-                model: models.User,
-                attributes: [ 'lastName', 'firstName', 'profilePictures', 'isAdmin']
+                model: User,
+                attributes: [ 'lastName', 'firstName', 'profilePictures', 'isAdmin', 'isModo']
             }]
         }).then(function(comments) {
             if (comments) {

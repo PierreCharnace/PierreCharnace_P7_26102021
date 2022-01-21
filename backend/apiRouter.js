@@ -24,7 +24,7 @@ exports.router = (function() {
     apiRouter.delete('/posts/delete/:id', postsCtrl.deleteOnePost);
 
     //Comments routes
-    apiRouter.post ('/:id/comments/new', commentsCtrl.createComment);
+    apiRouter.post ('/comments/new/:id', commentsCtrl.createComment);
     apiRouter.get ('/comments/', commentsCtrl.listComments);
     apiRouter.delete ('/comments/delete/:id', commentsCtrl.deleteComment);
     

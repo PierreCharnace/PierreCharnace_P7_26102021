@@ -16,17 +16,15 @@ module.exports = {
         const headerAuth = req.headers['authorization'];
         const userId = jwtUtils.getUserId(headerAuth);
         // Params
-        //const title = req.body.title;
         const content = req.body.content;
         const attachment = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null;
 
-
-        if ( content == null || attachment == null) {
+        if ( content == null && attachment == null) {
             return res.status(401).json({ 'error': 'missing parameters' });
         }
 
         if (content.length <= CONTENT_LIMIT) {
-            return res.status(402).json({ 'error': 'invalid parameters' });
+            return res.status(401).json({ 'error': 'invalid parameters' });
         }
 
         asyncLib.waterfall([
@@ -51,6 +49,9 @@ module.exports = {
                     })
                     .then(function(newPost) {
                         done(newPost);
+                    })
+                    .catch(function(err) {
+                        return res.status(400).json({ 'error': 'user not found' });
                     });
                 } else {
                     res.status(404).json({ 'error': 'user not found' });
@@ -101,8 +102,8 @@ module.exports = {
         
         const headerAuth  = req.headers['authorization'];
         const userId      = jwtUtils.getUserId(headerAuth);
-        const postId      = req.params.id;
-
+        postId = req.params.id
+       console.log(userId);
         asyncLib.waterfall([
             // Checks if the request is sent from an registered user
             function(done) {
@@ -112,13 +113,13 @@ module.exports = {
                         done(null, userFound);
                     })
                     .catch(function(err) {
-                        return res.status(500).json({ 'error': 'unable to verify user' });
+                        return res.status(502).json({ 'error': 'unable to verify user' });
                     });
             },
-
             // Get the targeted post infos
             function(userFound, done) {
                 Post.findOne({
+                    
                         where: { id: postId }
                     })
                     .then(function(postFound) {
@@ -145,7 +146,15 @@ module.exports = {
                     res.status(401).json({ 'error': "user not allowed" });
                 }
             },
-        ]);
+        ],
+        
+        function(userFound) {
+            if (userFound) {
+                return res.status(201).json({ 'message': 'post deleted' });
+            } else {
+                return res.status(500).json({ 'error': 'cannot delete post' });
+            }
+        });
     },
 
         updatePost: (req, res) => {
