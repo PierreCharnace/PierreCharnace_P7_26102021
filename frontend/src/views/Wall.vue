@@ -91,7 +91,7 @@ export default {
           window.alert('Post publié')
           console.log(res);
           localStorage.setItem('postInfos', JSON.stringify(res))
-          //this.$router.go()
+          this.$router.go()
   
         }).catch((err) => {  
           window.alert("Il manque quelque chose")
