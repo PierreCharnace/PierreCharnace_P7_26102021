@@ -17,15 +17,16 @@ module.exports = {
         }
     },
       userId: { 
-        allowNull: false,
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
-        model: 'Users',
-        key: 'id'
+          model: 'Users',
+          key: 'id'
         }
       },
       content: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,

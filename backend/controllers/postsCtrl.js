@@ -42,7 +42,6 @@ module.exports = {
             function(userFound, done) {
                 if(userFound) {
                     Post.create({
-
                         content : content,
                         attachment: attachment,
                         UserId  : userFound.id

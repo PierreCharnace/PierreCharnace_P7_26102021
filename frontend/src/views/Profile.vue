@@ -101,8 +101,11 @@ export default {
                 }
         
             },
-
+     
+                
+           
             deleteProfile: function () {
+                 if (confirm("Voulez-vous vraiment supprimer votre compte?"))       {
                 let userToken = localStorage.getItem('user');
                 userToken = JSON.parse(userToken)
                 axios
@@ -123,7 +126,7 @@ export default {
                 .catch(error => (console.log('cannot delete user ' + error )))
         
             }
-        
+         }
     }
     
 }

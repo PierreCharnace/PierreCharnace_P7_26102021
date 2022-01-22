@@ -16,7 +16,8 @@
                     <img v-if="uploadUrl != null" :src="uploadUrl" alt="image de publication" max-width=100% class="img-fluid" height: auto>  
                 </div>
                 <div class="container end">
-                    <div fluid><input  type="file" @change="onAttachmentSelected " name="attachment" class="end_btn"/></div>
+                    <div fluid>   
+                    <input type="file" @change="onAttachmentSelected " class="end_btn choose-file"/></div>
                     <button type="button" class="end_btn" @click="createPost()">Publier</button>
                 </div>
               </form>
@@ -70,14 +71,13 @@ export default {
       createPost() {
         let userToken = localStorage.getItem('user');
         userToken = JSON.parse(userToken)// get user token into the localStorage
-        if (this.attachment.name == null || this.attachment == null ) {
+        if (this.attachment.name == null || this.attachment == null) {
           window.alert('Il faut mettre une image')
         }
         const fd = new FormData();//create the data for axios
         fd.append('attachment',this.attachment, this.attachment.name)
         fd.append('content', this.content);
-        
-
+     
         axios.post("http://localhost:3000/api/posts/new",
         
         fd,
@@ -90,9 +90,8 @@ export default {
         .then(res => {
           window.alert('Post publié')
           console.log(res);
-          localStorage.setItem('postInfos', JSON.stringify(res))
-          this.$router.go()
-  
+          localStorage.setItem('postInfos', JSON.stringify(res));
+          this.$router.go();
         }).catch((err) => {  
           window.alert("Il manque quelque chose")
           localStorage.removeItem('postInfos')
@@ -209,6 +208,12 @@ textarea {
     width: 80px;
     height: 50px;
     font-size: 0.8rem;
+  }
+  .choose-file {
+    width: 110px;
+    height: 50px;
+    font-size: 0.8rem;
+    flex-wrap: word-break;
   }
   .modal-dialog .modal-content {
     width: 95%;

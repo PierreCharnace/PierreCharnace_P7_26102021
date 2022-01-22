@@ -77,12 +77,7 @@ export default new Vuex.Store({
       localStorage.removeItem('user');
       localStorage.removeItem('emailLocal');
 
-    },/*
-    user: function(state, user) {
-      instance.defaults.headers.common['Authorization'] = user.token;
-      state.user = user
-    },*/
-  
+    },
   },
   actions: { /**Algo for login ***************************/
     login: ({commit}, userInfos) => {

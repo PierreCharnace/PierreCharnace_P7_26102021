@@ -279,7 +279,7 @@ module.exports = {
        
           // Soft-deletion modifying the post the ad a timestamp to deletedAt
           User.destroy({
-                  where: { id: userId }
+                  where: { id: req.params.id }
               })
               .then(() => res.status(200).json({ message: 'Utilisateur supprimé' })) // send confirmation if done
               .catch(error => res.status(500).json({ 'error': 'cannot delete user' }))

@@ -3,7 +3,7 @@
         <div class="container post-container" v-if="posts != null" >
             <div class="card mt-2" v-for="(post,idx) in posts" :key="idx" >
                 <button v-if="user.userId == post.userId || userInfos.isAdmin == 1 || userInfos.isModo == 1" class="erase" @click.prevent="erasePost(post.id)"><i class="fas fa-times-circle"></i></button>
-                <div class="hour"> À {{ post.createdAt }} </div>
+                <div class="hour"> Le {{ post.createdAt.substr(0, 10).split("-").reverse().join("-") }} </div>
                 <div ><i class="fas fa-trash-alt" type="button" v-if="userInfos.isAdmin == 1" @click="deleteProfile(post.userId)"> {{post.userId}} {{ post.userToken }} </i> {{ post.User && post.User.lastName ? post.User.lastName : 'Inconnu' }} {{ post.User && post.User.firstName ? post.User.firstName: 'Inconnu'}} a dit </div>
                 <p class="post-content"> {{post.content}} </p>
                 <img class="card-img-top" :src="post.attachment"  alt="image de publication">
@@ -13,7 +13,8 @@
                 </form>
      
                 <div  class="comments mt-1 row" v-for="comment in comments.filter(comment => {return comment.postId == post.id})" :key="comment.id">
-                    <button v-if="user.userId == comment.userId || userInfos.isAdmin == 1 || userInfos.isModo == 1" class="erase" @click.prevent="eraseComment(comment.id)"><i class="fas fa-times-circle"></i></button>
+                    <i v-if="user.userId == comment.userId || userInfos.isAdmin == 1 || userInfos.isModo == 1" @click.prevent="eraseComment(comment.id)" class="fas fa-times-circle erase" type="button"></i>
+                    <span class="CreatedAt">  {{comment.createdAt.substr(0, 10).split("-").reverse().join("-")}} </span>
                     <div class="comments_user ">{{comment.User && comment.User.firstName ? comment.User.firstName: 'Inconnu'}} {{comment.User && comment.User.lastName ? comment.User.lastName: 'Inconnu'}} : {{ comment.content }}</div>
                 </div>
 
@@ -123,6 +124,7 @@ export default {
             })
     },
     eraseComment(id) {
+        if (confirm("Vouez-vous supprimer le post?")) {
       axios 
         .delete('http://localhost:3000/api/comments/delete/'+ id, {
             headers: {
@@ -139,9 +141,11 @@ export default {
                 console.error("Impossible d'effacer le commentaire");
                 window.alert("Impossible d'effacer le commentaire")
             })
+        }
         },
 
     erasePost(id) {
+         if (confirm("Voulez-vous supprimer le post?")) {
       axios
         .delete('http://localhost:3000/api/posts/delete/' + id, {
           headers: {
@@ -158,9 +162,13 @@ export default {
             console.log(err);
             window.alert("impossible d'effacer le post")
         })
+         }
     },
       deleteProfile: function (id) {
-                   let userToken = localStorage.getItem('user');
+          if (confirm("Voulez-vous supprimer le compte?")) {
+              
+          
+                let userToken = localStorage.getItem('user');
                 userToken = JSON.parse(userToken)
                 axios
                     .delete(`http://localhost:3000/api/users/userProfile/${id}`, {
@@ -171,11 +179,11 @@ export default {
                     })
                 .then(res => {
                     console.log(res);
-                    confirm("Le compte à bien été supprimé !");
-                   this.$router.go()
+                    alert("Le compte à bien été supprimé !");
+                    this.$router.go()
                 })
                 .catch(error => (console.log('cannot delete user ' + error )))
-        
+        }
       },
         
 
@@ -263,11 +271,18 @@ $groupBorder :rgb(186, 77, 85);
     width: 80%;
     min-height: 40px;
 }
+.comment-erase {
+    width: px;
+}
 .comments_user {
     font-size: 0.9rem;
     margin-right: 8px;
     
 }
+.CreatedAt {
+    font-size: 0.6rem;
+}
+
 .comments_written {
     background-color: rgb(255, 215, 215);
     border-radius: 1rem;

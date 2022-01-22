@@ -9,23 +9,23 @@ const asyncLib = require('async');
 
 
 module.exports = {
-    createComment: function(req, res) {
+    createComment: function(req, res, next) {
          // Getting auth header
         const headerAuth = req.headers['authorization'];
         const userId = jwtUtils.getUserId(headerAuth);
-        const postId = req.params.id;
+       // const postId = req.params.id;
         // Params
         const content = req.body;
-        console.log(req.body.content);
-        if (content == null) {
+        console.log(content);
+        if (content == null ) {
             return res.status(400).json({ 'error': 'missing parameters' });
-        }
-
+        } 
         asyncLib.waterfall([
             
             function(done) {//1///////////////////
                 User.findOne({ 
-                    where: { id: userId } })
+                    where: { id: userId } 
+                })
                 .then(function(userFound) {
                     done(null, userFound);
                 })
@@ -36,9 +36,9 @@ module.exports = {
             function(userFound, done) {//2////////////////////
                 if(userFound) {
                     Comment.create({
-                        content : content,
+                        content : req.body.content,                      
+                        postId: req.params.id,
                         UserId: userFound.id,
-                        postId: postId,
                     })
                     .then(function(newComment) {
                         done(newComment);    
@@ -64,7 +64,7 @@ module.exports = {
         const fields = req.query.fields; // column when we need to display
         const order = req.query.order; // get posts by particular order
         Comment.findAll({
-            order: [(order != null) ? order.split(':') : ['createdAt', 'DESC']],
+            order: [(order != null) ? order.split(':') : ['createdAt', 'ASC']],
             attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
             include: [{
                 model: User,
