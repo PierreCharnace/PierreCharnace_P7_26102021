@@ -3,7 +3,7 @@
         <div class="container post-container" v-if="posts != null" >
             <div class="card mt-2" v-for="(post,idx) in posts" :key="idx" >
                 <button v-if="user.userId == post.userId || userInfos.isAdmin == 1 || userInfos.isModo == 1" class="erase" @click.prevent="erasePost(post.id)"><i class="fas fa-times-circle"></i></button>
-                <div class="hour"> Le {{ post.createdAt.substr(0, 10).split("-").reverse().join("-") }} </div>
+                <div class="hour"> À {{ post.createdAt.slice(11, 16)}} le {{ post.createdAt.substr(0, 10).split("-").reverse().join("-") }} </div>
                 <div ><i class="fas fa-trash-alt" type="button" v-if="userInfos.isAdmin == 1" @click="deleteProfile(post.userId)"> {{post.userId}} {{ post.userToken }} </i> {{ post.User && post.User.lastName ? post.User.lastName : 'Inconnu' }} {{ post.User && post.User.firstName ? post.User.firstName: 'Inconnu'}} a dit </div>
                 <p class="post-content"> {{post.content}} </p>
                 <img class="card-img-top" :src="post.attachment"  alt="image de publication">
@@ -14,7 +14,7 @@
      
                 <div  class="comments mt-1 row" v-for="comment in comments.filter(comment => {return comment.postId == post.id})" :key="comment.id">
                     <i v-if="user.userId == comment.userId || userInfos.isAdmin == 1 || userInfos.isModo == 1" @click.prevent="eraseComment(comment.id)" class="fas fa-times-circle erase" type="button"></i>
-                    <span class="CreatedAt">  {{comment.createdAt.substr(0, 10).split("-").reverse().join("-")}} </span>
+                    <span class="CreatedAt">À {{ post.createdAt.slice(11, 16)}} le  {{comment.createdAt.substr(0, 10).split("-").reverse().join("-")}} </span>
                     <div class="comments_user ">{{comment.User && comment.User.firstName ? comment.User.firstName: 'Inconnu'}} {{comment.User && comment.User.lastName ? comment.User.lastName: 'Inconnu'}} : {{ comment.content }}</div>
                 </div>
 
@@ -166,10 +166,9 @@ export default {
     },
       deleteProfile: function (id) {
           if (confirm("Voulez-vous supprimer le compte?")) {
-              
-          
                 let userToken = localStorage.getItem('user');
                 userToken = JSON.parse(userToken)
+
                 axios
                     .delete(`http://localhost:3000/api/users/userProfile/${id}`, {
                         headers: {

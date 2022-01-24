@@ -116,11 +116,11 @@ export default {
                         }
                     })
                 .then(res => {
-                    console.log(res);
                     alert("Votre compte à bien été supprimé !");
                     localStorage.removeItem("emailLocal");
                     localStorage.removeItem("user");
                     localStorage.removeItem("postInfos");
+                    this.$store.commit('logout');
                     this.$router.push('/register');
                 })
                 .catch(error => (console.log('cannot delete user ' + error )))

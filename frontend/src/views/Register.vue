@@ -45,7 +45,7 @@ export default {
   },
   
   computed : {
-    validateFields: function () {
+    validateFields: function () {// unlock button for register
       if (this.lastName !="" && this.firstName !="" && this.email != "" && this.password != "") {
         return true;
       } else {
@@ -107,11 +107,10 @@ export default {
             self.$router.push('/login');
             window.alert("ENREGISTREMENT RÉUSSI,Vous allez être redirigé vers la page de connexion")
           }).catch(function (error) {      
+
             if (error == `Error: Request failed with status code 409`) {
                       emailp.innerHTML = 'Adresse mail déjà utilisée';
 
-             } else {
-            emailp.innerHTML = ''
             }
           })
        
