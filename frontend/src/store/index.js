@@ -76,6 +76,7 @@ export default new Vuex.Store({
       }
       localStorage.removeItem('user');
       localStorage.removeItem('emailLocal');
+      localStorage.removeItem('postInfos');
 
     },
   },
@@ -120,19 +121,7 @@ export default new Vuex.Store({
           reject(err)
         })
     },
-   /* updateProfile: ({commit, user}) => {
-      commit;
-      console.log(user);
-      instance.put('/users/userProfile')
-        .then(function (request) {
-          commit('user',)
-          console.log('-->', user);
-   
-        })
-        .catch(function (err) {
-          reject(err)
-         })
-    }*/
+  
   },
   modules: {
   }

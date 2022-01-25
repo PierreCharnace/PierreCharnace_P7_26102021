@@ -102,7 +102,7 @@ module.exports = {
         const headerAuth  = req.headers['authorization'];
         const userId      = jwtUtils.getUserId(headerAuth);
         postId = req.params.id
-       console.log(userId);
+        
         asyncLib.waterfall([
             // Checks if the request is sent from an registered user
             function(done) {

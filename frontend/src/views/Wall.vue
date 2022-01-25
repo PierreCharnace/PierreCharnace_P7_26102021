@@ -1,7 +1,7 @@
 <template>
 <div class="register">
     <div class="container register">
-        <p>Page du mur et ajout de post</p>
+        <h1>Mur de publication</h1>
         <a href="#id01" ><button class="btn-access">Écrivez votre message</button></a>
 
         <div id="id01" class="modal">
@@ -115,6 +115,7 @@ $bgmain :rgb(44, 62, 93) ;
 .btn-access {
     border-radius: 8px;
     background-color: $groupBorder;
+    color: white;
 }
 
 /* Foncer l'arrière-plan de la fenêtre modale */

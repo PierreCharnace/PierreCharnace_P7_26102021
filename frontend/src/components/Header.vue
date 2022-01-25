@@ -52,6 +52,7 @@ export default {
 
 <style lang='scss'>
 $colorgroup: rgb(186, 77, 85);
+$bgmain :rgb(44, 62, 93) ;
 
 nav {
   position: fixed;
@@ -64,7 +65,7 @@ nav {
     color: #2c3e50;
 
     &.router-link-exact-active {
-      color: $colorgroup;
+      color: black;
     }
   }
 }

@@ -8,7 +8,8 @@
                 <p class="post-content"> {{post.content}} </p>
                 <img class="card-img-top" :src="post.attachment"  alt="image de publication">
                 <form class="card-body">
-                    <textarea id="text" v-model="newComment" class="card-text" placeholder="Écrivez un commentaire..."/>
+                    <label for="text" >Commentaire</label>
+                    <textarea id="text" v-model="newComment" type="text" class="card-text" placeholder="Écrivez un commentaire..."/>
                     <button class="btn_comment mt-1"  id="createComment" type="button" @click.prevent="createComment(post.id)">Commenter</button><br><br>
                 </form>
      
@@ -177,7 +178,6 @@ export default {
                         }
                     })
                 .then(res => {
-                    console.log(res);
                     alert("Le compte à bien été supprimé !");
                     this.$router.go()
                 })
@@ -259,6 +259,7 @@ $groupBorder :rgb(186, 77, 85);
 .btn_comment {
     background-color: $groupBorder;
     border-radius: 12px;
+    color: white;
 }
 
 .comments {
@@ -270,16 +271,14 @@ $groupBorder :rgb(186, 77, 85);
     width: 80%;
     min-height: 40px;
 }
-.comment-erase {
-    width: px;
-}
+
 .comments_user {
     font-size: 0.9rem;
     margin-right: 8px;
     
 }
 .CreatedAt {
-    font-size: 0.6rem;
+    font-size: 0.7rem;
 }
 
 .comments_written {

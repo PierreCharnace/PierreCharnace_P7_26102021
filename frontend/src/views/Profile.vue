@@ -3,12 +3,13 @@
     <form v-if="modify == 1" class="card" style="width: 18rem;">
         <h1>Page de profil</h1>
         <img :src="profilePictures" alt="image de profile" class="card-img-top">
-       <!-- <input type="file" id="imageFile" @change="changeImage" >-->
         <div class="card-body">
-           <!-- <b-button @click="onUpLoad">Modifier image de profile</b-button>-->
+            <label for="newLastName">Nom</label>
             <input id="newLastName" v-model="user.lastName" class="text-center m-1" placeholder="nom"/> 
+            <label for="newFirstName">Nom</label>
             <input id="newFirstName" v-model="user.firstName" class="text-center m-1" placeholder="prénom"/>
-            <input class="text-center m-1 cursor" v-model="emailLocal" disabled/>
+            <label for="emailSecond">Nom</label>
+            <input id="emailSecond" class="text-center m-1 cursor" v-model="emailLocal" disabled/>
             <b-button class="mt-1" @click="modify --, updateProfile()" type="button">Enregistrer mes informations</b-button>
             <b-button class="mt-3" @click="deleteProfile()"><i class="fas fa-trash-alt"></i></b-button>
         </div>
@@ -17,11 +18,14 @@
         <h1>Page de profil</h1>
         <img :src="user.profilePictures" alt="image de profile" class="card-img-top">
         <div class="card-body">
-            <input v-model="user.lastName" class="text-center m-1 cursor" disabled/>
-            <input v-model="user.firstName" class="text-center m-1 cursor" disabled/>
-            <input class="text-center m-1 cursor" v-model="emailLocal" disabled/>
+            <label for="lastName">Nom</label>
+            <input id="lastName" v-model="user.lastName" class="text-center m-1 cursor" disabled/>
+            <label for="firstName">Prénom</label>
+            <input id="firstName" v-model="user.firstName" class="text-center m-1 cursor" disabled/>
+            <label for="email">Email</label>
+            <input id="email" class="text-center m-1 cursor" v-model="emailLocal" disabled/>
             <b-button class="mt-1" @click="modify ++">Modifier mes informations</b-button>
-            <b-button class="mt-3" @click="deleteProfile()"><i class="fas fa-trash-alt"></i></b-button>
+            <b-button class="mt-3" @click="deleteProfile()" title="Boutton effacement de compte"><i class="fas fa-trash-alt"></i></b-button>
         </div>  
     </div>
     
@@ -72,17 +76,13 @@ export default {
         },
         updateProfile: function () {
                 let userToken = localStorage.getItem('user');
-                //const self = this;
                 userToken = JSON.parse(userToken)
-           //     const fd = new FormData();
-              //  fd.append('image', this.profilePictures, this.profilePictures.name)
-               // console.log('**********',fd[2]);
+
                 {  axios.put("http://localhost:3000/api/users/userProfile", {
                         
                         lastName : this.user.lastName,
                         firstName: this.user.firstName,
-                        //profilePictures: this.ProfilePictures,
-                       // profilePictures: /*fd.*/profilePictures
+
                     },
                     {
                         headers: {

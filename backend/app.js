@@ -8,6 +8,7 @@ const helmet = require('helmet');
 //routes
 const apiRouter = require('./apiRouter').router;
 
+
 // Specify generic requests model
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');

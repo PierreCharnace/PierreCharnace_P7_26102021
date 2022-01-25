@@ -51,7 +51,7 @@ module.exports = {
                 .catch(function(err) {
                     return res.status(500).json({ 'error': 'unable to verify user'});
                 });
-            },// If not, Hash the password
+            },// If not exist, Hash the password
             function(userFound, done) {
                 if (!userFound) {
                   bcrypt.hash(password, 5, function( err, bcryptedPassword ) {
